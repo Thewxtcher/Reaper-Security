@@ -61,6 +61,9 @@ import CreateCodeProject from './pages/CreateCodeProject';
 import CodeEditor from './pages/CodeEditor';
 import Contact from './pages/Contact';
 import Research from './pages/Research';
+import Themes from './pages/Themes';
+import Marketplace from './pages/Marketplace';
+import Profile from './pages/Profile';
 import __Layout from './Layout.jsx';
 
 
@@ -79,6 +82,9 @@ export const PAGES = {
     "CodeEditor": CodeEditor,
     "Contact": Contact,
     "Research": Research,
+    "Themes": Themes,
+    "Marketplace": Marketplace,
+    "Profile": Profile,
 }
 
 export const pagesConfig = {
