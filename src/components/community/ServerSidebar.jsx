@@ -3,6 +3,30 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Compass, MessageCircle, UserPlus } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
+function NavIcon({ label, isActive, onClick, icon, color = 'red' }) {
+  const activeColor = color === 'green' ? 'bg-green-600' : 'bg-red-600';
+  const hoverColor = color === 'green' ? 'hover:bg-green-600' : 'hover:bg-red-600';
+  return (
+    <TooltipProvider delayDuration={300}>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <motion.button
+            onClick={onClick}
+            animate={{ borderRadius: isActive ? '12px' : '50%' }}
+            transition={{ duration: 0.2 }}
+            className={`w-12 h-12 flex items-center justify-center mb-2 transition-colors ${
+              isActive ? `${activeColor} text-white` : `bg-[#1a1a1a] text-gray-400 ${hoverColor} hover:text-white`
+            }`}
+          >
+            {icon}
+          </motion.button>
+        </TooltipTrigger>
+        <TooltipContent side="right" className="bg-[#111] border-white/10 text-white">{label}</TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  );
+}
+
 function ServerIcon({ server, isActive, onClick, unreadCount }) {
   const [hovered, setHovered] = useState(false);
   const initials = server.name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
