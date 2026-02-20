@@ -91,7 +91,7 @@ export default function ServerSidebar({ servers, activeServerId, onSelectServer,
       {/* Divider */}
       <div className="w-8 h-[2px] bg-white/10 rounded-full my-2" />
 
-      {/* Add server */}
+      {/* Add server — now using NavIcon below */}
       <TooltipProvider delayDuration={300}>
         <Tooltip>
           <TooltipTrigger asChild>
