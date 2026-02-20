@@ -54,6 +54,8 @@ import Community from './pages/Community';
 import Forum from './pages/Forum';
 import ForumThread from './pages/ForumThread';
 import CreateForumPost from './pages/CreateForumPost';
+import ForumRules from './pages/ForumRules';
+import CodeHub from './pages/CodeHub';
 import __Layout from './Layout.jsx';
 
 
@@ -65,6 +67,8 @@ export const PAGES = {
     "Forum": Forum,
     "ForumThread": ForumThread,
     "CreateForumPost": CreateForumPost,
+    "ForumRules": ForumRules,
+    "CodeHub": CodeHub,
 }
 
 export const pagesConfig = {
