@@ -64,6 +64,8 @@ import Research from './pages/Research';
 import Themes from './pages/Themes';
 import Marketplace from './pages/Marketplace';
 import Profile from './pages/Profile';
+import UserProfile from './pages/UserProfile';
+import ResearchPost from './pages/ResearchPost';
 import __Layout from './Layout.jsx';
 
 
@@ -85,6 +87,8 @@ export const PAGES = {
     "Themes": Themes,
     "Marketplace": Marketplace,
     "Profile": Profile,
+    "UserProfile": UserProfile,
+    "ResearchPost": ResearchPost,
 }
 
 export const pagesConfig = {
