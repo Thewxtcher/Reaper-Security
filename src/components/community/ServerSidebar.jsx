@@ -73,7 +73,7 @@ export default function ServerSidebar({ servers, activeServerId, onSelectServer,
       />
 
       {/* Divider */}
-      <div className="w-8 h-[2px] bg-white/10 rounded-full mb-2" />
+      <div className="w-8 h-[2px] bg-white/10 rounded-full my-2" />
 
       {/* Server list */}
       <div className="flex flex-col items-center w-full px-3">
