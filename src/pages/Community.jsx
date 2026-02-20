@@ -9,20 +9,29 @@ import ServerSidebar from '../components/community/ServerSidebar';
 import ChannelSidebar from '../components/community/ChannelSidebar';
 import ChatPanel from '../components/community/ChatPanel';
 import CodeChannelPanel from '../components/community/CodeChannelPanel';
+import VideoCallPanel from '../components/community/VideoCallPanel';
 import MemberPanel from '../components/community/MemberPanel';
 import CreateServerModal from '../components/community/CreateServerModal';
 import AddChannelModal from '../components/community/AddChannelModal';
+import DMSidebar from '../components/community/DMSidebar';
+import DMPanel from '../components/community/DMPanel';
+import FindFriendsPanel from '../components/community/FindFriendsPanel';
 
+// view modes: 'server' | 'dm' | 'friends'
 export default function Community() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [user, setUser] = useState(null);
 
+  const [viewMode, setViewMode] = useState('server'); // 'server' | 'dm' | 'friends'
   const [activeServer, setActiveServer] = useState(null);
   const [activeChannel, setActiveChannel] = useState(null);
+  const [activeConversation, setActiveConversation] = useState(null);
+  const [dmSubView, setDmSubView] = useState('friends'); // 'friends' | conv id
   const [showCreateServer, setShowCreateServer] = useState(false);
   const [addChannelCategory, setAddChannelCategory] = useState(null);
   const [selectedMember, setSelectedMember] = useState(null);
+  const [inVideoCall, setInVideoCall] = useState(false);
 
   const queryClient = useQueryClient();
 
@@ -39,21 +48,18 @@ export default function Community() {
     checkAuth();
   }, []);
 
-  // Fetch servers where user is a member (or just all servers for simplicity)
   const { data: servers = [] } = useQuery({
     queryKey: ['servers'],
     queryFn: () => base44.entities.Server.list('created_date', 50),
     enabled: !!user,
   });
 
-  // Fetch channels for active server
   const { data: channels = [] } = useQuery({
     queryKey: ['channels', activeServer?.id],
     queryFn: () => base44.entities.Channel.filter({ server_id: activeServer.id }, 'position', 100),
     enabled: !!activeServer?.id,
   });
 
-  // Fetch members for active server
   const { data: members = [] } = useQuery({
     queryKey: ['members', activeServer?.id],
     queryFn: () => base44.entities.ServerMember.filter({ server_id: activeServer.id }, 'role', 100),
@@ -61,13 +67,9 @@ export default function Community() {
     refetchInterval: 10000,
   });
 
-  // Auto-join server as member if not already
   const joinMutation = useMutation({
     mutationFn: async (server) => {
-      const existing = await base44.entities.ServerMember.filter({
-        server_id: server.id,
-        user_email: user.email
-      });
+      const existing = await base44.entities.ServerMember.filter({ server_id: server.id, user_email: user.email });
       if (existing.length === 0) {
         await base44.entities.ServerMember.create({
           server_id: server.id,
@@ -78,19 +80,53 @@ export default function Community() {
           status: 'online',
           joined_at: new Date().toISOString(),
         });
-        // Update member count
-        await base44.entities.Server.update(server.id, {
-          member_count: (server.member_count || 1) + 1
-        });
+        await base44.entities.Server.update(server.id, { member_count: (server.member_count || 1) + 1 });
       }
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['members', activeServer?.id] }),
   });
 
   const handleSelectServer = (server) => {
+    setViewMode('server');
     setActiveServer(server);
     setActiveChannel(null);
+    setInVideoCall(false);
     if (server && user) joinMutation.mutate(server);
+  };
+
+  const handleOpenDMs = () => {
+    setViewMode('dm');
+    setActiveServer(null);
+    setInVideoCall(false);
+  };
+
+  const handleOpenFriends = () => {
+    setViewMode('friends');
+    setActiveServer(null);
+    setInVideoCall(false);
+  };
+
+  const handleStartDM = async (friendEmail, friendName) => {
+    // Find or create DM conversation
+    const existing = await base44.entities.Conversation.filter({ type: 'dm' });
+    const found = existing.find(c =>
+      c.participant_emails?.includes(user.email) &&
+      c.participant_emails?.includes(friendEmail)
+    );
+    if (found) {
+      setActiveConversation(found);
+      setViewMode('dm');
+    } else {
+      const conv = await base44.entities.Conversation.create({
+        type: 'dm',
+        participant_emails: [user.email, friendEmail],
+        participant_names: [user.full_name || user.email, friendName || friendEmail],
+        created_by: user.email,
+      });
+      setActiveConversation(conv);
+      setViewMode('dm');
+      queryClient.invalidateQueries({ queryKey: ['conversations'] });
+    }
   };
 
   useEffect(() => {
@@ -119,20 +155,16 @@ export default function Community() {
           </div>
           <h1 className="text-3xl font-bold text-white mb-4">Login Required</h1>
           <p className="text-gray-400 mb-8">Join the Reaper Security community.</p>
-          <Button
-            onClick={() => base44.auth.redirectToLogin(window.location.href)}
-            className="bg-gradient-to-r from-red-600 to-green-600"
-          >
-            <LogIn className="w-4 h-4 mr-2" />
-            Login to Continue
+          <Button onClick={() => base44.auth.redirectToLogin(window.location.href)} className="bg-gradient-to-r from-red-600 to-green-600">
+            <LogIn className="w-4 h-4 mr-2" />Login to Continue
           </Button>
         </motion.div>
       </div>
     );
   }
 
-  // No server selected — show home/server list
-  if (!activeServer) {
+  // ── DM / Friends view ─────────────────────────────────────────
+  if (viewMode === 'dm' || viewMode === 'friends') {
     return (
       <div className="flex h-screen bg-[#0a0a0a] pt-16 overflow-hidden">
         <ServerSidebar
@@ -141,7 +173,57 @@ export default function Community() {
           onSelectServer={handleSelectServer}
           onCreateServer={() => setShowCreateServer(true)}
           onDiscoverServer={() => {}}
+          onOpenDMs={handleOpenDMs}
+          onOpenFriends={handleOpenFriends}
+          dmView={viewMode === 'friends' ? 'friends' : 'dm'}
         />
+        <DMSidebar
+          user={user}
+          activeView={dmSubView}
+          activeConvId={activeConversation?.id}
+          onSelectConv={(conv) => { setActiveConversation(conv); setDmSubView('conv'); }}
+          onSelectView={(v) => { setDmSubView(v); setActiveConversation(null); }}
+        />
+        {/* Main panel */}
+        {(viewMode === 'friends' || dmSubView === 'friends') && !activeConversation ? (
+          <FindFriendsPanel user={user} onStartDM={handleStartDM} />
+        ) : activeConversation ? (
+          <DMPanel conversation={activeConversation} user={user} />
+        ) : (
+          <div className="flex-1 flex items-center justify-center bg-[#111] text-gray-600">
+            <div className="text-center">
+              <p className="text-lg font-semibold text-gray-500 mb-2">No conversation selected</p>
+              <p className="text-sm">Pick a DM or find friends to get started</p>
+            </div>
+          </div>
+        )}
+
+        {showCreateServer && (
+          <CreateServerModal user={user} onClose={() => setShowCreateServer(false)}
+            onCreated={(server) => { queryClient.invalidateQueries({ queryKey: ['servers'] }); handleSelectServer(server); }} />
+        )}
+      </div>
+    );
+  }
+
+  // ── Server view ───────────────────────────────────────────────
+  const isCodeChannel = activeChannel?.type === 'code';
+  const isVideoChannel = activeChannel?.type === 'video' || activeChannel?.type === 'voice';
+
+  return (
+    <div className="flex h-screen bg-[#0a0a0a] pt-16 overflow-hidden">
+      <ServerSidebar
+        servers={servers}
+        activeServerId={activeServer?.id}
+        onSelectServer={handleSelectServer}
+        onCreateServer={() => setShowCreateServer(true)}
+        onDiscoverServer={() => {}}
+        onOpenDMs={handleOpenDMs}
+        onOpenFriends={handleOpenFriends}
+        dmView={null}
+      />
+
+      {!activeServer ? (
         <div className="flex-1 flex items-center justify-center bg-[#111]">
           <div className="text-center max-w-md px-6">
             <div className="w-20 h-20 rounded-2xl bg-white/5 flex items-center justify-center mx-auto mb-6">
@@ -149,88 +231,67 @@ export default function Community() {
             </div>
             <h2 className="text-white text-2xl font-bold mb-3 font-serif">Welcome to Community</h2>
             <p className="text-gray-500 mb-6">
-              {servers.length === 0
-                ? 'No servers yet. Create one to get started!'
-                : 'Select a server from the sidebar to start chatting.'}
+              {servers.length === 0 ? 'No servers yet. Create one to get started!' : 'Select a server from the sidebar.'}
             </p>
-            <Button
-              onClick={() => setShowCreateServer(true)}
-              className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600"
-            >
+            <Button onClick={() => setShowCreateServer(true)} className="bg-gradient-to-r from-red-600 to-red-700">
               Create a Server
             </Button>
           </div>
         </div>
-
-        {showCreateServer && (
-          <CreateServerModal
-            user={user}
-            onClose={() => setShowCreateServer(false)}
-            onCreated={(server) => {
-              queryClient.invalidateQueries({ queryKey: ['servers'] });
-              handleSelectServer(server);
-            }}
-          />
-        )}
-      </div>
-    );
-  }
-
-  const isCodeChannel = activeChannel?.type === 'code';
-
-  return (
-    <div className="flex h-screen bg-[#0a0a0a] pt-16 overflow-hidden">
-      {/* Server sidebar */}
-      <ServerSidebar
-        servers={servers}
-        activeServerId={activeServer?.id}
-        onSelectServer={handleSelectServer}
-        onCreateServer={() => setShowCreateServer(true)}
-        onDiscoverServer={() => {}}
-      />
-
-      {/* Channel sidebar */}
-      <ChannelSidebar
-        server={activeServer}
-        channels={channels}
-        activeChannelId={activeChannel?.id}
-        onSelectChannel={setActiveChannel}
-        onAddChannel={(category) => setAddChannelCategory(category)}
-        user={user}
-        memberRole={memberRole}
-      />
-
-      {/* Main content */}
-      {isCodeChannel ? (
-        <CodeChannelPanel channel={activeChannel} server={activeServer} user={user} />
       ) : (
-        <ChatPanel channel={activeChannel} server={activeServer} user={user} />
+        <>
+          <ChannelSidebar
+            server={activeServer}
+            channels={channels}
+            activeChannelId={activeChannel?.id}
+            onSelectChannel={(ch) => { setActiveChannel(ch); setInVideoCall(false); }}
+            onAddChannel={(category) => setAddChannelCategory(category)}
+            user={user}
+            memberRole={memberRole}
+          />
+
+          {/* Main content area */}
+          {inVideoCall && (isVideoChannel) ? (
+            <VideoCallPanel
+              channel={activeChannel}
+              server={activeServer}
+              user={user}
+              members={members}
+              onLeave={() => setInVideoCall(false)}
+            />
+          ) : isCodeChannel ? (
+            <CodeChannelPanel channel={activeChannel} server={activeServer} user={user} />
+          ) : isVideoChannel ? (
+            // Voice/Video channel landing — join button
+            <div className="flex-1 flex flex-col items-center justify-center bg-[#111] gap-4">
+              <div className="w-16 h-16 rounded-2xl bg-green-500/10 flex items-center justify-center">
+                {activeChannel?.type === 'voice'
+                  ? <span className="text-3xl">🎙️</span>
+                  : <span className="text-3xl">📹</span>}
+              </div>
+              <h2 className="text-white font-bold text-xl">{activeChannel?.name}</h2>
+              <p className="text-gray-400 text-sm">
+                {activeChannel?.type === 'voice' ? 'Voice channel' : 'Video channel'}
+              </p>
+              <Button onClick={() => setInVideoCall(true)}
+                className="bg-gradient-to-r from-green-600 to-green-700 hover:from-green-500 hover:to-green-600 px-8 py-3 text-lg">
+                {activeChannel?.type === 'voice' ? '🎙️ Join Voice' : '📹 Join Video'}
+              </Button>
+            </div>
+          ) : (
+            <ChatPanel channel={activeChannel} server={activeServer} user={user} />
+          )}
+
+          <MemberPanel members={members} onMemberClick={setSelectedMember} />
+        </>
       )}
 
-      {/* Member panel */}
-      <MemberPanel
-        members={members}
-        onMemberClick={setSelectedMember}
-      />
-
-      {/* Modals */}
       {showCreateServer && (
-        <CreateServerModal
-          user={user}
-          onClose={() => setShowCreateServer(false)}
-          onCreated={(server) => {
-            queryClient.invalidateQueries({ queryKey: ['servers'] });
-            handleSelectServer(server);
-          }}
-        />
+        <CreateServerModal user={user} onClose={() => setShowCreateServer(false)}
+          onCreated={(server) => { queryClient.invalidateQueries({ queryKey: ['servers'] }); handleSelectServer(server); }} />
       )}
-
       {addChannelCategory !== null && (
-        <AddChannelModal
-          server={activeServer}
-          category={addChannelCategory}
-          onClose={() => setAddChannelCategory(null)}
-        />
+        <AddChannelModal server={activeServer} category={addChannelCategory} onClose={() => setAddChannelCategory(null)} />
       )}
     </div>
   );
