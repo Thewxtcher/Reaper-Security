@@ -59,7 +59,6 @@ import ForumRules from './pages/ForumRules';
 import ForumThread from './pages/ForumThread';
 import Home from './pages/Home';
 import Learning from './pages/Learning';
-import Marketplace from './pages/Marketplace';
 import Research from './pages/Research';
 import ResearchPost from './pages/ResearchPost';
 import Services from './pages/Services';
@@ -68,7 +67,6 @@ import UserProfile from './pages/UserProfile';
 import CyberLabs from './pages/CyberLabs';
 import ThreatIntel from './pages/ThreatIntel';
 import AIAssistant from './pages/AIAssistant';
-import AdminDashboard from './pages/AdminDashboard';
 import __Layout from './Layout.jsx';
 
 
@@ -85,7 +83,6 @@ export const PAGES = {
     "ForumThread": ForumThread,
     "Home": Home,
     "Learning": Learning,
-    "Marketplace": Marketplace,
     "Research": Research,
     "ResearchPost": ResearchPost,
     "Services": Services,
@@ -94,7 +91,6 @@ export const PAGES = {
     "CyberLabs": CyberLabs,
     "ThreatIntel": ThreatIntel,
     "AIAssistant": AIAssistant,
-    "AdminDashboard": AdminDashboard,
 }
 
 export const pagesConfig = {
