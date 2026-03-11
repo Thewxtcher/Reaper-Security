@@ -8,6 +8,8 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import TypingIndicator, { useTyping } from './TypingIndicator';
+import MediaPicker from './MediaPicker';
+import { AnimatePresence as AP } from 'framer-motion';
 
 const EMOJIS = ['👍', '❤️', '😂', '😮', '😢', '🔥', '💯', '🎉'];
 
