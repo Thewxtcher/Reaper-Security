@@ -3,16 +3,17 @@ import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Send, X, Edit2, Check, Smile, Reply, Trash2, Users, Paperclip
+  Send, X, Edit2, Check, Smile, Trash2, Video, Phone
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import MediaPicker from './MediaPicker';
+import TypingIndicator, { useTyping } from './TypingIndicator';
+import VideoCallPanel from './VideoCallPanel';
 
 const EMOJIS = ['👍','❤️','😂','😮','😢','🔥','💯','🎉'];
 
-function Avatar({ name, size = 8, color = 'from-red-500 to-green-600' }) {
+function Avatar({ name, size = 8 }) {
   return (
-    <div className={`w-${size} h-${size} rounded-full bg-gradient-to-br ${color} flex items-center justify-center text-white font-bold text-xs flex-shrink-0`}>
+    <div className={`w-${size} h-${size} rounded-full bg-gradient-to-br from-red-500 to-green-600 flex items-center justify-center text-white font-bold text-xs flex-shrink-0`}>
       {name?.[0]?.toUpperCase() || '?'}
     </div>
   );
@@ -116,12 +117,20 @@ function DMMessage({ msg, user, prevMsg, onReact, onDelete, onEdit }) {
   );
 }
 
+// Fake channel object for DM video calls
+function dmChannel(conversation) {
+  return { id: `dm-${conversation.id}`, name: 'DM Call', type: 'video' };
+}
+
 export default function DMPanel({ conversation, user }) {
   const [input, setInput] = useState('');
   const [showPicker, setShowPicker] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [inVideoCall, setInVideoCall] = useState(false);
   const bottomRef = useRef(null);
   const queryClient = useQueryClient();
+  // Use conversation id as "channel id" for typing
+  const { typingUsers, startTyping, stopTyping } = useTyping(conversation?.id, user);
 
   const { data: messages = [] } = useQuery({
     queryKey: ['dms', conversation?.id],
@@ -131,6 +140,7 @@ export default function DMPanel({ conversation, user }) {
   });
 
   useEffect(() => {
+    if (!conversation?.id) return;
     const unsub = base44.entities.DirectMessage.subscribe(event => {
       if (event.data?.conversation_id === conversation?.id) {
         queryClient.invalidateQueries({ queryKey: ['dms', conversation.id] });
@@ -143,12 +153,8 @@ export default function DMPanel({ conversation, user }) {
 
   const sendMutation = useMutation({
     mutationFn: (data) => base44.entities.DirectMessage.create(data),
-    onSuccess: async (msg) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['dms', conversation.id] });
-      await base44.entities.Conversation.update(conversation.id, {
-        last_message: input.slice(0, 80),
-        last_message_at: new Date().toISOString()
-      });
       queryClient.invalidateQueries({ queryKey: ['conversations'] });
     }
   });
@@ -194,24 +200,21 @@ export default function DMPanel({ conversation, user }) {
       last_message: content.slice(0, 80),
       last_message_at: new Date().toISOString(),
     });
-    // Send notifications to all other participants
+    // Notify others
     const otherEmails = conversation.participant_emails?.filter(e => e !== user.email) || [];
     const senderName = user.full_name || user.email.split('@')[0];
     for (const email of otherEmails) {
       base44.entities.Notification.create({
-        user_email: email,
-        type: 'message',
-        title: `${senderName}`,
-        body: content.slice(0, 100),
-        from_email: user.email,
-        from_name: senderName,
-        is_read: false,
+        user_email: email, type: 'message',
+        title: senderName, body: content.slice(0, 100),
+        from_email: user.email, from_name: senderName, is_read: false,
       });
     }
   };
 
   const handleSend = () => {
     if (!input.trim()) return;
+    stopTyping();
     doSend(input.trim());
     setInput('');
   };
@@ -224,19 +227,13 @@ export default function DMPanel({ conversation, user }) {
 
   const handleFileUpload = async (file) => {
     setUploading(true);
-    try {
-      const { file_url } = await base44.integrations.Core.UploadFile({ file });
-      const type = file.type.startsWith('image') ? 'image' : file.type.startsWith('video') ? 'video' : 'file';
-      doSend(file.name, [{ url: file_url, name: file.name, type }]);
-    } catch (e) { console.error(e); }
+    const { file_url } = await base44.integrations.Core.UploadFile({ file });
+    const type = file.type.startsWith('image') ? 'image' : file.type.startsWith('video') ? 'video' : 'file';
+    doSend(file.name, [{ url: file_url, name: file.name, type }]);
     setUploading(false);
   };
 
-  const otherName = conversation?.type === 'group'
-    ? conversation.name
-    : conversation?.participant_names?.find(n => n !== (user?.full_name || user?.email)) || 'User';
-
-  // Mark messages as read on open
+  // Mark messages as read
   useEffect(() => {
     if (!messages.length || !user?.email) return;
     messages.filter(m => !m.read_by?.includes(user.email)).forEach(m => {
@@ -244,26 +241,49 @@ export default function DMPanel({ conversation, user }) {
     });
   }, [messages.length]);
 
+  const otherName = conversation?.type === 'group'
+    ? conversation.name
+    : conversation?.participant_names?.find(n => n !== (user?.full_name || user?.email)) || 'User';
+
   const lastMsg = messages[messages.length - 1];
   const isLastRead = lastMsg?.read_by?.some(e => e !== user.email);
 
+  if (inVideoCall) {
+    return (
+      <VideoCallPanel
+        channel={dmChannel(conversation)}
+        server={{ id: 'dm' }}
+        user={user}
+        members={[]}
+        onLeave={() => setInVideoCall(false)}
+      />
+    );
+  }
+
   return (
     <div className="flex-1 flex flex-col bg-[#111] min-w-0">
+      {/* Header */}
       <div className="h-12 px-4 flex items-center gap-3 border-b border-white/10 flex-shrink-0">
         <Avatar name={otherName} size={8} />
-        <div>
+        <div className="flex-1 min-w-0">
           <div className="text-white font-semibold text-sm">{otherName}</div>
           {conversation?.type === 'group' && (
             <div className="text-gray-500 text-xs">{conversation.participant_emails?.length} members</div>
           )}
         </div>
-        {conversation?.type === 'group' && (
-          <div className="ml-auto flex items-center gap-1">
-            <Users className="w-4 h-4 text-gray-500" />
-          </div>
-        )}
+        {/* Video/voice call buttons */}
+        <div className="flex items-center gap-1 ml-auto">
+          <button
+            onClick={() => setInVideoCall(true)}
+            className="p-2 text-gray-400 hover:text-green-400 hover:bg-green-500/10 rounded-lg transition-all"
+            title="Start Video Call"
+          >
+            <Video className="w-5 h-5" />
+          </button>
+        </div>
       </div>
 
+      {/* Messages */}
       <div className="flex-1 overflow-y-auto py-2">
         {messages.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-center px-8">
@@ -289,7 +309,11 @@ export default function DMPanel({ conversation, user }) {
         </div>
       )}
 
-      <div className="px-4 pb-4 pt-2 flex-shrink-0">
+      {/* Typing */}
+      <TypingIndicator typingUsers={typingUsers} />
+
+      {/* Input */}
+      <div className="px-4 pb-4 pt-1 flex-shrink-0">
         <div className="relative flex items-center gap-2 bg-[#1a1a1a] rounded-xl border border-white/10 px-4 py-2">
           <AnimatePresence>
             {showPicker && (
@@ -308,7 +332,7 @@ export default function DMPanel({ conversation, user }) {
           </button>
           <input
             value={input}
-            onChange={e => setInput(e.target.value)}
+            onChange={e => { setInput(e.target.value); if (e.target.value) startTyping(); else stopTyping(); }}
             onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); } }}
             placeholder={uploading ? 'Uploading...' : `Message ${otherName}`}
             className="flex-1 bg-transparent text-white text-sm placeholder:text-gray-600 focus:outline-none"
