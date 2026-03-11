@@ -220,6 +220,12 @@ export default function Layout({ children, currentPageName }) {
 
             {/* Right side */}
             <div className="flex items-center gap-2 ml-auto">
+              {isAuthenticated && user && (
+                <Link to={createPageUrl('Community') + '?view=dm'} title="Direct Messages"
+                  className={`p-2 text-gray-400 hover:text-white transition-colors ${currentPageName === 'Community' ? 'text-white' : ''}`}>
+                  <MessageCircle className="w-5 h-5" />
+                </Link>
+              )}
               {isAuthenticated && user && <NotificationBell user={user} />}
               {isAuthenticated ? (
                 <DropdownMenu>
