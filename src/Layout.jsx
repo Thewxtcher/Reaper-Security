@@ -299,7 +299,7 @@ export default function Layout({ children, currentPageName }) {
                   {item.name}
                 </Link>
               ))}
-              {user?.role === 'admin' && (
+              {user?.email === 'reaperappofficial@gmail.com' && (
                 <Link to={createPageUrl('AdminDashboard')} onClick={() => setMobileMenuOpen(false)}
                   className="flex items-center gap-3 px-4 py-3 rounded-lg text-red-400 hover:bg-red-500/10">
                   <BarChart2 className="w-5 h-5" />Admin Panel
