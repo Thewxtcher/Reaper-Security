@@ -99,9 +99,28 @@ function MessageBubble({ msg, user, onReply, onDelete, onEdit, onReact, onPin, p
                   <code>{msg.content}</code>
                 </pre>
               ) : (
-                <p className="text-gray-300 text-sm leading-relaxed break-words">{msg.content}
-                  {msg.is_edited && <span className="text-gray-600 text-xs ml-1">(edited)</span>}
-                </p>
+                <>
+                  {msg.attachments?.map((att, i) => (
+                    <div key={i} className="mt-1 max-w-xs">
+                      {att.type === 'gif' || att.type === 'image' ? (
+                        <img src={att.url} alt={att.name} className="rounded-lg max-w-full max-h-60 object-cover" />
+                      ) : att.type === 'video' ? (
+                        <video src={att.url} controls className="rounded-lg max-w-full max-h-60" />
+                      ) : att.url ? (
+                        <a href={att.url} target="_blank" rel="noopener noreferrer"
+                          className="flex items-center gap-2 bg-white/5 border border-white/10 rounded-lg p-2 hover:bg-white/10 transition-colors">
+                          <Paperclip className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                          <span className="text-blue-400 text-sm truncate hover:underline">{att.name}</span>
+                        </a>
+                      ) : null}
+                    </div>
+                  ))}
+                  {msg.content && !(msg.attachments?.length === 1 && (msg.attachments[0].type === 'gif' || msg.attachments[0].type === 'image') && msg.content === msg.attachments[0].name) && (
+                    <p className="text-gray-300 text-sm leading-relaxed break-words">{msg.content}
+                      {msg.is_edited && <span className="text-gray-600 text-xs ml-1">(edited)</span>}
+                    </p>
+                  )}
+                </>
               )}
             </>
           )}
