@@ -199,6 +199,7 @@ export default function Community() {
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen flex items-center justify-center py-20 bg-[#0a0a0a]">
+        {pushNotifs}
         <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} className="text-center">
           <div className="w-20 h-20 rounded-2xl bg-red-500/10 flex items-center justify-center mx-auto mb-6">
             <Shield className="w-10 h-10 text-red-500" />
