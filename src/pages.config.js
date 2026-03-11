@@ -70,6 +70,7 @@ import UserProfile from './pages/UserProfile';
 import AdminDashboard from './pages/AdminDashboard';
 import Profile from './pages/Profile';
 import Marketplace from './pages/Marketplace';
+import SSHTerminal from './pages/SSHTerminal';
 import __Layout from './Layout.jsx';
 
 
@@ -97,6 +98,7 @@ export const PAGES = {
     "AdminDashboard": AdminDashboard,
     "Profile": Profile,
     "Marketplace": Marketplace,
+    "SSHTerminal": SSHTerminal,
 }
 
 export const pagesConfig = {
