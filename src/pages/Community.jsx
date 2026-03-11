@@ -173,6 +173,8 @@ export default function Community() {
   // Presence tracking
   usePresence(user, activeServer?.id);
 
+  // Push notifications handled by component below
+
   // Handle invite code joins from URL
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
