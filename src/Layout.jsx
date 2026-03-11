@@ -6,7 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import {
   Home, Shield, BookOpen, Users, MessageSquare, Code, Mail,
   Store, LogIn, Menu, X, ChevronDown, Bell, Bot, FlaskConical,
-  Zap, BarChart2, Settings, User, Palette, ChevronRight, MessageCircle, Terminal
+  Zap, BarChart2, Settings, User, Palette, ChevronRight, MessageCircle, Terminal, Rocket
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -51,6 +51,12 @@ const navGroups = [
     label: 'Market',
     items: [
       { name: 'Marketplace', icon: Store, page: 'Marketplace' },
+    ]
+  },
+  {
+    label: 'Upgrades',
+    items: [
+      { name: 'Site Upgrades', icon: Rocket, page: 'Upgrades' },
     ]
   },
 ];
