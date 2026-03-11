@@ -162,22 +162,41 @@ export default function DMPanel({ conversation, user }) {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['dms', conversation.id] }),
   });
 
-  const handleSend = () => {
-    if (!input.trim()) return;
-    const content = input.trim();
+  const doSend = (content, attachments = []) => {
     sendMutation.mutate({
       conversation_id: conversation.id,
       author_email: user.email,
       author_name: user.full_name || user.email.split('@')[0],
       content,
+      attachments,
       read_by: [user.email],
     });
-    setInput('');
-    // Mark conversation last message
     base44.entities.Conversation.update(conversation.id, {
       last_message: content.slice(0, 80),
       last_message_at: new Date().toISOString(),
     });
+  };
+
+  const handleSend = () => {
+    if (!input.trim()) return;
+    doSend(input.trim());
+    setInput('');
+  };
+
+  const handleEmojiSelect = (emoji) => setInput(prev => prev + emoji);
+
+  const handleGifSelect = async (gifUrl, title) => {
+    doSend(gifUrl, [{ url: gifUrl, name: title || 'GIF', type: 'gif' }]);
+  };
+
+  const handleFileUpload = async (file) => {
+    setUploading(true);
+    try {
+      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      const type = file.type.startsWith('image') ? 'image' : file.type.startsWith('video') ? 'video' : 'file';
+      doSend(file.name, [{ url: file_url, name: file.name, type }]);
+    } catch (e) { console.error(e); }
+    setUploading(false);
   };
 
   const otherName = conversation?.type === 'group'
