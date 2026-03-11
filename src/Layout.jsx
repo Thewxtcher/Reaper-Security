@@ -43,7 +43,7 @@ const navGroups = [
     label: 'Code',
     items: [
       { name: 'Code Hub', icon: Code, page: 'CodeHub' },
-      { name: 'SSH Terminal', icon: MessageSquare, page: 'SSHTerminal' },
+      { name: 'SSH Terminal', icon: Terminal, page: 'SSHTerminal' },
     ]
   },
   {
