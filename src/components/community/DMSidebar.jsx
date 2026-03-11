@@ -14,6 +14,7 @@ const NAV_ITEMS = [
   { id: 'create-group', label: 'New Group DM', Icon: Users },
 ];
 
+
 function ConvItem({ conv, user, isActive, onClick }) {
   const isGroup = conv.type === 'group';
   const otherName = isGroup
