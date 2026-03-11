@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label';
 export default function CreateServerModal({ user, onClose, onCreated }) {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
+  const [isPrivate, setIsPrivate] = useState(false);
   const queryClient = useQueryClient();
 
   const createMutation = useMutation({
@@ -20,6 +21,7 @@ export default function CreateServerModal({ user, onClose, onCreated }) {
         owner_email: user.email,
         invite_code: Math.random().toString(36).substring(2, 10).toUpperCase(),
         member_count: 1,
+        is_private: isPrivate,
       });
       // Create default channels
       const defaultChannels = [
@@ -45,6 +47,8 @@ export default function CreateServerModal({ user, onClose, onCreated }) {
     },
     onSuccess: (server) => {
       queryClient.invalidateQueries({ queryKey: ['servers'] });
+      queryClient.invalidateQueries({ queryKey: ['allServers'] });
+      queryClient.invalidateQueries({ queryKey: ['allServersForSidebar'] });
       onCreated(server);
       onClose();
     }
