@@ -72,6 +72,7 @@ import ThreatIntel from './pages/ThreatIntel';
 import Upgrades from './pages/Upgrades';
 import UserProfile from './pages/UserProfile';
 import ServiceProviderApply from './pages/ServiceProviderApply';
+import Home from './pages/Home';
 import __Layout from './Layout.jsx';
 
 
@@ -101,6 +102,7 @@ export const PAGES = {
     "Upgrades": Upgrades,
     "UserProfile": UserProfile,
     "ServiceProviderApply": ServiceProviderApply,
+    "Home": Home,
 }
 
 export const pagesConfig = {
