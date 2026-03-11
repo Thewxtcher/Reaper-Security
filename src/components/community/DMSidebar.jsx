@@ -38,9 +38,10 @@ function ConvItem({ conv, user, isActive, onClick }) {
   );
 }
 
-export default function DMSidebar({ user, activeView, activeConvId, onSelectConv, onSelectView }) {
+export default function DMSidebar({ user, activeView, activeConvId, onSelectConv, onSelectView, onStartDM }) {
   const [search, setSearch] = useState('');
   const [showGroupModal, setShowGroupModal] = useState(false);
+  const [showStartDM, setShowStartDM] = useState(false);
   const [groupName, setGroupName] = useState('');
   const [groupEmails, setGroupEmails] = useState('');
   const queryClient = useQueryClient();
