@@ -90,7 +90,7 @@ export default function Learning() {
             {topics.map((topic, index) => (
               <motion.a
                 key={topic.title}
-                href={driveUrl}
+                href={topic.url}
                 target="_blank"
                 rel="noopener noreferrer"
                 initial={{ opacity: 0, y: 20 }}
