@@ -220,6 +220,7 @@ export default function Layout({ children, currentPageName }) {
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: idx * 0.04 }}>
                             <Link to={createPageUrl(item.page)}
+                              onMouseEnter={() => sfx.hover()}
                               className={`flex items-center gap-2 text-sm cursor-pointer w-full px-2 py-1.5 ${currentPageName === item.page ? 'text-white' : 'text-gray-300 hover:text-white'}`}>
                               <item.icon className="w-4 h-4" />
                               {item.name}
