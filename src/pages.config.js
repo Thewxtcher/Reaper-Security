@@ -60,7 +60,6 @@ import CyberLabs from './pages/CyberLabs';
 import Forum from './pages/Forum';
 import ForumRules from './pages/ForumRules';
 import ForumThread from './pages/ForumThread';
-import Home from './pages/Home';
 import Learning from './pages/Learning';
 import Marketplace from './pages/Marketplace';
 import Profile from './pages/Profile';
@@ -90,7 +89,6 @@ export const PAGES = {
     "Forum": Forum,
     "ForumRules": ForumRules,
     "ForumThread": ForumThread,
-    "Home": Home,
     "Learning": Learning,
     "Marketplace": Marketplace,
     "Profile": Profile,
@@ -106,7 +104,7 @@ export const PAGES = {
 }
 
 export const pagesConfig = {
-    mainPage: "Home",
+    mainPage: "AIAssistant",
     Pages: PAGES,
     Layout: __Layout,
 };
