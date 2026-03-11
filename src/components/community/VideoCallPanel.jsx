@@ -222,6 +222,13 @@ export default function VideoCallPanel({ channel, user, onLeave }) {
     }
   };
 
+  // Attach stream to video element whenever localStream or joining state changes
+  useEffect(() => {
+    if (localStream && localVideoRef.current && !joining) {
+      localVideoRef.current.srcObject = localStream;
+    }
+  }, [localStream, joining]);
+
   const handleLeave = async () => {
     clearInterval(pollingRef.current);
     // Notify peers
