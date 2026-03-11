@@ -79,8 +79,14 @@ export default function UserProfile() {
           <Card className="bg-[#111] border border-white/10 mb-8">
             <CardContent className="p-8">
               <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
-                <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-red-500 to-green-600 flex items-center justify-center text-white text-3xl font-bold">
-                  {authorName?.[0]?.toUpperCase() || '?'}
+                <div className="w-20 h-20 rounded-2xl overflow-hidden">
+                  {skill?.avatar_url ? (
+                    <img src={skill.avatar_url} alt={authorName} className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full bg-gradient-to-br from-red-500 to-green-600 flex items-center justify-center text-white text-3xl font-bold">
+                      {authorName?.[0]?.toUpperCase() || '?'}
+                    </div>
+                  )}
                 </div>
                 <div className="text-center md:text-left flex-1">
                   <h1 className="text-2xl font-bold text-white mb-2">{authorName}</h1>
@@ -100,6 +106,15 @@ export default function UserProfile() {
                     )}
                   </div>
                   {skill?.bio && <p className="text-gray-400 text-sm">{skill.bio}</p>}
+                  {/* Social links */}
+                  {(skill?.github_url || skill?.twitter_url || skill?.linkedin_url || skill?.website_url) && (
+                    <div className="flex items-center gap-3 mt-2">
+                      {skill.github_url && <a href={skill.github_url} target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-white transition-colors"><Github className="w-4 h-4" /></a>}
+                      {skill.twitter_url && <a href={skill.twitter_url} target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-sky-400 transition-colors"><Twitter className="w-4 h-4" /></a>}
+                      {skill.linkedin_url && <a href={skill.linkedin_url} target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-blue-400 transition-colors"><Linkedin className="w-4 h-4" /></a>}
+                      {skill.website_url && <a href={skill.website_url} target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-green-400 transition-colors"><Globe className="w-4 h-4" /></a>}
+                    </div>
+                  )}
                 </div>
                 <Link to={createPageUrl(`Community`) + `?view=dm`}>
                   <Button size="sm" className="bg-green-600/20 border border-green-600/30 text-green-400 hover:bg-green-600/30">
