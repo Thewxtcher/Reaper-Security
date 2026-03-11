@@ -7,6 +7,7 @@ import {
   Hash, Paperclip, ChevronDown, Code
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import TypingIndicator, { useTyping } from './TypingIndicator';
 
 const EMOJIS = ['👍', '❤️', '😂', '😮', '😢', '🔥', '💯', '🎉'];
 
