@@ -275,7 +275,14 @@ export default function Community() {
         dmView={null}
       />
 
-      {!activeServer ? (
+      {showDiscover ? (
+        <DiscoverServersPanel
+          user={user}
+          joinedServerIds={joinedServerIds}
+          onJoin={(server) => { setShowDiscover(false); handleSelectServer(server); }}
+          onClose={() => setShowDiscover(false)}
+        />
+      ) : !activeServer ? (
         <div className="flex-1 flex items-center justify-center bg-[#111]">
           <div className="text-center max-w-md px-6">
             <div className="w-20 h-20 rounded-2xl bg-white/5 flex items-center justify-center mx-auto mb-6">
