@@ -17,6 +17,7 @@ import ServerSettingsModal from '../components/community/ServerSettingsModal';
 import DMSidebar from '../components/community/DMSidebar';
 import DMPanel from '../components/community/DMPanel';
 import FindFriendsPanel from '../components/community/FindFriendsPanel';
+import DiscoverServersPanel from '../components/community/DiscoverServersPanel';
 import { usePresence } from '../components/community/TypingIndicator';
 import MemberProfilePopup from '../components/community/MemberProfilePopup';
 
