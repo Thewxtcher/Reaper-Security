@@ -117,8 +117,27 @@ export default function CodeHub() {
         </div>
       </section>
 
+      {/* Folders Tab */}
+      {activeTab === 'folders' && (
+        <section className="pb-12">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            {isAuthenticated && user ? (
+              <CodeFoldersPanel user={user} />
+            ) : (
+              <div className="text-center py-16">
+                <Folder className="w-12 h-12 text-gray-600 mx-auto mb-4" />
+                <p className="text-gray-500 mb-4">Login to manage your folders</p>
+                <Button onClick={() => base44.auth.redirectToLogin(window.location.href)} className="bg-red-600 hover:bg-red-500">
+                  <LogIn className="w-4 h-4 mr-2" />Login
+                </Button>
+              </div>
+            )}
+          </div>
+        </section>
+      )}
+
       {/* Community Code Repository Banner */}
-      <section className="pb-8">
+      {activeTab === 'browse' && <section className="pb-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <Card className="bg-gradient-to-r from-[#111] to-[#1a1a1a] border border-blue-500/20">
             <CardContent className="flex items-start gap-4 p-6">
