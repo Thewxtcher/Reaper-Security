@@ -108,6 +108,7 @@ export default function Layout({ children, currentPageName }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
+  const [isAdminUser, setIsAdminUser] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const { data: themes } = useQuery({
