@@ -373,6 +373,9 @@ export default function Marketplace() {
       {user && showCreate && (
         <CreatePluginDialog open={showCreate} onClose={() => setShowCreate(false)} user={user} queryClient={queryClient} />
       )}
+      {user && showCreateTheme && (
+        <CreateThemeDialog open={showCreateTheme} onClose={() => setShowCreateTheme(false)} user={user} queryClient={queryClient} />
+      )}
     </div>
   );
 }
