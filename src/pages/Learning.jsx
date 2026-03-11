@@ -164,6 +164,15 @@ export default function Learning() {
         </div>
       </section>
 
+      {/* Upload Content */}
+      <section className="py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-2xl font-bold font-serif text-white mb-2">Share Learning Content</h2>
+          <p className="text-gray-400 text-sm mb-8">Upload resources, tools, or materials to contribute to the community.</p>
+          <UploadSection />
+        </div>
+      </section>
+
       {/* Bootcamp CTA */}
       <section className="py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
