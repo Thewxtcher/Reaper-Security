@@ -72,6 +72,7 @@ import Themes from './pages/Themes';
 import ThreatIntel from './pages/ThreatIntel';
 import Upgrades from './pages/Upgrades';
 import UserProfile from './pages/UserProfile';
+import ServiceProviderApply from './pages/ServiceProviderApply';
 import __Layout from './Layout.jsx';
 
 
@@ -101,6 +102,7 @@ export const PAGES = {
     "ThreatIntel": ThreatIntel,
     "Upgrades": Upgrades,
     "UserProfile": UserProfile,
+    "ServiceProviderApply": ServiceProviderApply,
 }
 
 export const pagesConfig = {
