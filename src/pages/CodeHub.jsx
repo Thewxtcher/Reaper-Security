@@ -136,8 +136,9 @@ export default function CodeHub() {
         </section>
       )}
 
-      {/* Community Code Repository Banner */}
-      {activeTab === 'browse' && <section className="pb-8">
+      {/* Browse Tab */}
+      {activeTab === 'browse' && <>
+      <section className="pb-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <Card className="bg-gradient-to-r from-[#111] to-[#1a1a1a] border border-blue-500/20">
             <CardContent className="flex items-start gap-4 p-6">
@@ -158,6 +159,7 @@ export default function CodeHub() {
 
       {/* Search and Filters */}
       <section className="pb-8">
+...
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row gap-4">
             <div className="relative flex-1">
