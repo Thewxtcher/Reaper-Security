@@ -272,6 +272,7 @@ export default function Community() {
 
   return (
     <div className="flex h-screen bg-[#0a0a0a] pt-16 overflow-hidden">
+      {pushNotifs}
       <ServerSidebar
         servers={servers}
         activeServerId={activeServer?.id}
