@@ -349,8 +349,11 @@ export default function ChatPanel({ channel, server, user }) {
         )}
       </AnimatePresence>
 
+      {/* Typing indicator */}
+      <TypingIndicator typingUsers={typingUsers} />
+
       {/* Input */}
-      <div className="px-4 pb-4 pt-2 flex-shrink-0">
+      <div className="px-4 pb-4 pt-1 flex-shrink-0">
         <div className={`flex items-end gap-2 bg-[#1a1a1a] rounded-xl border ${isCode ? 'border-green-500/30' : 'border-white/10'} px-4 py-2`}>
           <button
             onClick={() => setIsCode(!isCode)}
