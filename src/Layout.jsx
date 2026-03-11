@@ -6,7 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import {
   Home, Shield, BookOpen, Users, MessageSquare, Code, Mail,
   Store, LogIn, Menu, X, ChevronDown, Bell, Bot, FlaskConical,
-  Zap, BarChart2, Settings, User, Palette, ChevronRight, MessageCircle, Terminal, Rocket
+  Zap, BarChart2, Settings, User, Palette, ChevronRight, MessageCircle, Terminal, Rocket, Briefcase
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
