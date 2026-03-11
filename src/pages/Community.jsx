@@ -18,6 +18,7 @@ import DMSidebar from '../components/community/DMSidebar';
 import DMPanel from '../components/community/DMPanel';
 import FindFriendsPanel from '../components/community/FindFriendsPanel';
 import { usePresence } from '../components/community/TypingIndicator';
+import MemberProfilePopup from '../components/community/MemberProfilePopup';
 
 // view modes: 'server' | 'dm' | 'friends'
 export default function Community() {
@@ -316,6 +317,14 @@ export default function Community() {
       )}
       {showServerSettings && activeServer && (
         <ServerSettingsModal server={activeServer} user={user} onClose={() => setShowServerSettings(false)} />
+      )}
+      {selectedMember && (
+        <MemberProfilePopup
+          member={selectedMember}
+          onClose={() => setSelectedMember(null)}
+          onStartDM={(email, name) => { handleStartDM(email, name); }}
+          currentUserEmail={user?.email}
+        />
       )}
     </div>
   );

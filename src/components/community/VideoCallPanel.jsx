@@ -278,10 +278,28 @@ export default function VideoCallPanel({ channel, user, onLeave }) {
             <div className={`relative rounded-xl overflow-hidden bg-[#1a1a1a] border border-white/10 ${isSharing ? 'ring-2 ring-green-500' : ''}`}>
               {isCamOff && !isSharing && (
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <div className="w-14 h-14 rounded-full bg-gradient-to-br from-red-500 to-green-600 flex items-center justify-center text-xl font-bold text-white">
-                    {user?.full_name?.[0] || '?'}
+                  <div className="relative">
+                    <div className="w-14 h-14 rounded-full bg-gradient-to-br from-red-500 to-green-600 flex items-center justify-center text-xl font-bold text-white">
+                      {user?.full_name?.[0] || '?'}
+                    </div>
+                    {/* Talking indicator rings when cam off */}
+                    {!isMuted && (
+                      <>
+                        <span className="absolute inset-0 rounded-full border-2 border-green-400 animate-ping opacity-40" style={{ animationDuration: '1.2s' }} />
+                        <span className="absolute -inset-2 rounded-full border border-green-500/30 animate-ping opacity-20" style={{ animationDuration: '1.8s' }} />
+                      </>
+                    )}
                   </div>
-                  <span className="text-gray-400 text-sm mt-2">{user?.full_name || user?.email}</span>
+                  <span className="text-gray-400 text-sm mt-3">{user?.full_name || user?.email}</span>
+                  {!isMuted && (
+                    <div className="flex items-end gap-0.5 mt-2">
+                      {[0,1,2,3,4].map(i => (
+                        <div key={i} className="w-1 bg-green-400 rounded-full"
+                          style={{ height: `${6 + Math.random() * 10}px`, animation: `soundBar 0.6s ease-in-out ${i * 0.1}s infinite alternate` }} />
+                      ))}
+                    </div>
+                  )}
+                  <style>{`@keyframes soundBar { from { transform: scaleY(0.3); } to { transform: scaleY(1); } }`}</style>
                 </div>
               )}
               <video ref={localVideoRef} autoPlay muted playsInline
