@@ -17,26 +17,34 @@ const roleIcons = {
 const roleOrder = ['owner', 'admin', 'moderator', 'member'];
 const roleLabels = { owner: 'Owner', admin: 'Admin', moderator: 'Moderator', member: 'Members' };
 
+const STATUS_LABEL = { online: 'Online', idle: 'Idle', dnd: 'Do Not Disturb', offline: 'Offline' };
+
 function MemberItem({ member, onClick }) {
   const isOffline = member.status === 'offline';
+  const isIdle = member.status === 'idle';
   return (
     <button
       onClick={() => onClick(member)}
       className="w-full flex items-center gap-3 px-2 py-1.5 rounded-md hover:bg-white/5 transition-colors group"
+      title={`${member.nickname || member.user_name || member.user_email} — ${STATUS_LABEL[member.status] || 'Offline'}`}
     >
       <div className="relative flex-shrink-0">
-        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white ${
-          isOffline ? 'opacity-40' : ''
-        }`} style={{ backgroundColor: member.role_color || '#374151' }}>
+        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white ${isOffline ? 'opacity-40' : ''}`}
+          style={{ backgroundColor: member.role_color || '#374151' }}>
           {(member.nickname || member.user_name || member.user_email)?.[0]?.toUpperCase() || '?'}
         </div>
-        <div className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-[#0f0f0f] ${statusColors[member.status] || 'bg-gray-600'}`} />
+        <div className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-[#0f0f0f] ${statusColors[member.status] || 'bg-gray-600'}`}>
+          {member.status === 'online' && (
+            <span className="absolute inset-0 rounded-full bg-green-400 animate-ping opacity-50" style={{ animationDuration: '2s' }} />
+          )}
+        </div>
       </div>
       <div className="flex-1 min-w-0 text-left">
-        <div className={`text-sm font-medium truncate flex items-center gap-1 ${isOffline ? 'text-gray-600' : 'text-gray-300 group-hover:text-white'}`}>
+        <div className={`text-sm font-medium truncate flex items-center gap-1 ${isOffline ? 'text-gray-600' : isIdle ? 'text-yellow-200/80' : 'text-gray-300 group-hover:text-white'}`}>
           {member.nickname || member.user_name || member.user_email?.split('@')[0]}
           {roleIcons[member.role]}
         </div>
+        <div className="text-[10px] text-gray-600">{STATUS_LABEL[member.status] || 'Offline'}</div>
       </div>
     </button>
   );
