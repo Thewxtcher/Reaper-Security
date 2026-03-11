@@ -193,6 +193,9 @@ export default function Community() {
     );
   }
 
+  // Render push notification handler (invisible, just side-effects)
+  const pushNotifs = <PushNotifications user={user} />;
+
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen flex items-center justify-center py-20 bg-[#0a0a0a]">
