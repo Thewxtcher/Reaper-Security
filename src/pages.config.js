@@ -70,8 +70,8 @@ import SSHTerminal from './pages/SSHTerminal';
 import Services from './pages/Services';
 import Themes from './pages/Themes';
 import ThreatIntel from './pages/ThreatIntel';
-import UserProfile from './pages/UserProfile';
 import Upgrades from './pages/Upgrades';
+import UserProfile from './pages/UserProfile';
 import __Layout from './Layout.jsx';
 
 
@@ -99,8 +99,8 @@ export const PAGES = {
     "Services": Services,
     "Themes": Themes,
     "ThreatIntel": ThreatIntel,
-    "UserProfile": UserProfile,
     "Upgrades": Upgrades,
+    "UserProfile": UserProfile,
 }
 
 export const pagesConfig = {
