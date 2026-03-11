@@ -265,7 +265,7 @@ export default function Community() {
         activeServerId={activeServer?.id}
         onSelectServer={handleSelectServer}
         onCreateServer={() => setShowCreateServer(true)}
-        onDiscoverServer={() => {}}
+        onDiscoverServer={handleDiscover}
         onOpenDMs={handleOpenDMs}
         onOpenFriends={handleOpenFriends}
         dmView={null}
