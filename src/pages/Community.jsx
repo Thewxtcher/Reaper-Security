@@ -218,6 +218,7 @@ export default function Community() {
   if (viewMode === 'dm' || viewMode === 'friends') {
     return (
       <div className="flex h-screen bg-[#0a0a0a] pt-16 overflow-hidden">
+        {pushNotifs}
         <ServerSidebar
           servers={servers}
           activeServerId={null}
