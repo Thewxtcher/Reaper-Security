@@ -184,6 +184,7 @@ export default function ChatPanel({ channel, server, user }) {
   const bottomRef = useRef(null);
   const inputRef = useRef(null);
   const queryClient = useQueryClient();
+  const { typingUsers, startTyping, stopTyping } = useTyping(channel?.id, user);
 
   const { data: messages = [], isLoading } = useQuery({
     queryKey: ['messages', channel?.id],
