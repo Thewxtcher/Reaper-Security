@@ -204,6 +204,8 @@ export default function Layout({ children, currentPageName }) {
                       <motion.button
                         whileHover={{ scale: 1.03 }}
                         whileTap={{ scale: 0.97 }}
+                        onMouseEnter={() => sfx.hover()}
+                        onClick={() => sfx.menuOpen()}
                         className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm transition-all ${isActive ? 'bg-white/10 text-white' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}>
                         {group.label}
                         <ChevronDown className="w-3 h-3" />
