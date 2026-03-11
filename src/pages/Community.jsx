@@ -19,11 +19,14 @@ import FindFriendsPanel from '../components/community/FindFriendsPanel';
 
 // view modes: 'server' | 'dm' | 'friends'
 export default function Community() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const initialView = urlParams.get('view') === 'dm' ? 'dm' : 'server';
+
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [user, setUser] = useState(null);
 
-  const [viewMode, setViewMode] = useState('server'); // 'server' | 'dm' | 'friends'
+  const [viewMode, setViewMode] = useState(initialView); // 'server' | 'dm' | 'friends'
   const [activeServer, setActiveServer] = useState(null);
   const [activeChannel, setActiveChannel] = useState(null);
   const [activeConversation, setActiveConversation] = useState(null);
