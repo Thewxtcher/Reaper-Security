@@ -103,7 +103,10 @@ export default function Community() {
         await base44.entities.Server.update(server.id, { member_count: (server.member_count || 1) + 1 });
       }
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['members', activeServer?.id] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['members', activeServer?.id] });
+      queryClient.invalidateQueries({ queryKey: ['myMemberships', user?.email] });
+    },
   });
 
   const handleSelectServer = (server) => {
