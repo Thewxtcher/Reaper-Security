@@ -290,9 +290,14 @@ export default function Marketplace() {
                 </Button>
               </Link>
               {isAuthenticated && (
-                <Button onClick={() => setShowCreate(true)} className="bg-red-600 hover:bg-red-500">
-                  <Plus className="w-4 h-4 mr-2" />Create Plugin
-                </Button>
+                <>
+                  <Button onClick={() => setShowCreateTheme(true)} className="bg-purple-600 hover:bg-purple-500">
+                    <Wand2 className="w-4 h-4 mr-2" />Create Theme
+                  </Button>
+                  <Button onClick={() => setShowCreate(true)} className="bg-red-600 hover:bg-red-500">
+                    <Plus className="w-4 h-4 mr-2" />Create Plugin
+                  </Button>
+                </>
               )}
             </div>
           </div>
