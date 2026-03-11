@@ -338,7 +338,7 @@ export default function Layout({ children, currentPageName }) {
       </nav>
 
       {/* Main Content */}
-      <main className="pt-16">
+      <main className={isCommunity ? '' : 'pt-16'}>
         {children}
       </main>
     </div>
