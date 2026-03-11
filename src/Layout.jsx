@@ -133,27 +133,26 @@ export default function Layout({ children, currentPageName }) {
     });
   }, []);
 
-  const themeStyles = activeTheme ? {
-    '--primary': activeTheme.primary_color,
-    '--secondary': activeTheme.secondary_color,
-    '--background': activeTheme.background_color,
-    '--card': activeTheme.card_color,
-    '--text': activeTheme.text_color,
-  } : {};
-
   const isCommunity = currentPageName === 'Community';
 
+  const bg = activeTheme?.background_color || '#0a0a0a';
+  const card = activeTheme?.card_color || '#111111';
+  const primary = activeTheme?.primary_color || '#ef4444';
+  const secondary = activeTheme?.secondary_color || '#22c55e';
+  const text = activeTheme?.text_color || '#ffffff';
+
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white" style={themeStyles}>
+    <div className="min-h-screen text-white" style={{ backgroundColor: bg, color: text }}>
       <style>{`
         :root {
-          --primary: ${activeTheme?.primary_color || '#ef4444'};
-          --secondary: ${activeTheme?.secondary_color || '#22c55e'};
-          --background: ${activeTheme?.background_color || '#0a0a0a'};
-          --card: ${activeTheme?.card_color || '#111111'};
-          --text: ${activeTheme?.text_color || '#ffffff'};
+          --primary: ${primary};
+          --secondary: ${secondary};
+          --background: ${bg};
+          --card: ${card};
+          --text: ${text};
         }
-        body { background-color: var(--background) !important; }
+        body { background-color: ${bg} !important; color: ${text} !important; }
+        .bg-\\[\\#0a0a0a\\], .bg-\\[\\#111\\], .bg-\\[\\#0f0f0f\\] { background-color: ${bg} !important; }
       `}</style>
 
       {/* Navigation */}
