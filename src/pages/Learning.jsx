@@ -11,16 +11,16 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 const topics = [
-  { icon: Globe, title: 'Level 0 - Networking Basics', description: 'Start here! Learn networking fundamentals', color: 'text-blue-400', bgColor: 'bg-blue-500/10' },
-  { icon: Code, title: 'Programming', description: 'Programming languages for security', color: 'text-purple-400', bgColor: 'bg-purple-500/10' },
-  { icon: BookOpen, title: 'Hacking Books', description: 'Essential reading materials', color: 'text-pink-400', bgColor: 'bg-pink-500/10' },
-  { icon: Wrench, title: 'Real World Pentest', description: 'Practical penetration testing', color: 'text-red-400', bgColor: 'bg-red-500/10' },
-  { icon: Wrench, title: 'Tools', description: 'Security tools and utilities', color: 'text-orange-400', bgColor: 'bg-orange-500/10' },
-  { icon: Award, title: 'Free Certification Info', description: 'Certification prep resources', color: 'text-yellow-400', bgColor: 'bg-yellow-500/10' },
-  { icon: Globe, title: 'Websites for Learning', description: 'Curated learning platforms', color: 'text-green-400', bgColor: 'bg-green-500/10' },
-  { icon: Youtube, title: 'YouTube Channels', description: 'Video tutorials and courses', color: 'text-red-400', bgColor: 'bg-red-500/10' },
-  { icon: Monitor, title: 'Virtualization Software', description: 'VM setup and configuration', color: 'text-cyan-400', bgColor: 'bg-cyan-500/10' },
-  { icon: FolderOpen, title: "SKY's Educational Folder", description: 'Community contributed content', color: 'text-indigo-400', bgColor: 'bg-indigo-500/10' }
+  { icon: Globe, title: 'Level 0 - Networking Basics', description: 'Start here! Learn networking fundamentals', color: 'text-blue-400', bgColor: 'bg-blue-500/10', url: 'https://drive.google.com/drive/folders/1PV_jxVP0BeUe1nzGa5FfePnU7p7lYvTE?usp=drive_link' },
+  { icon: Code, title: 'Programming', description: 'Programming languages for security', color: 'text-purple-400', bgColor: 'bg-purple-500/10', url: 'https://drive.google.com/drive/folders/1PV_jxVP0BeUe1nzGa5FfePnU7p7lYvTE?usp=drive_link' },
+  { icon: BookOpen, title: 'Hacking Books', description: 'Essential reading materials', color: 'text-pink-400', bgColor: 'bg-pink-500/10', url: 'https://drive.google.com/drive/folders/1PV_jxVP0BeUe1nzGa5FfePnU7p7lYvTE?usp=drive_link' },
+  { icon: Wrench, title: 'Real World Pentest', description: 'Practical penetration testing', color: 'text-red-400', bgColor: 'bg-red-500/10', url: 'https://drive.google.com/drive/folders/1PV_jxVP0BeUe1nzGa5FfePnU7p7lYvTE?usp=drive_link' },
+  { icon: Wrench, title: 'Tools', description: 'Security tools and utilities', color: 'text-orange-400', bgColor: 'bg-orange-500/10', url: 'https://drive.google.com/drive/folders/1PV_jxVP0BeUe1nzGa5FfePnU7p7lYvTE?usp=drive_link' },
+  { icon: Award, title: 'Free Certification Info', description: 'Certification prep resources', color: 'text-yellow-400', bgColor: 'bg-yellow-500/10', url: 'https://drive.google.com/drive/folders/1PV_jxVP0BeUe1nzGa5FfePnU7p7lYvTE?usp=drive_link' },
+  { icon: Globe, title: 'Websites for Learning', description: 'Curated learning platforms', color: 'text-green-400', bgColor: 'bg-green-500/10', url: 'https://drive.google.com/drive/folders/1PV_jxVP0BeUe1nzGa5FfePnU7p7lYvTE?usp=drive_link' },
+  { icon: Youtube, title: 'YouTube Channels', description: 'Video tutorials and courses', color: 'text-red-400', bgColor: 'bg-red-500/10', url: 'https://drive.google.com/drive/folders/1PV_jxVP0BeUe1nzGa5FfePnU7p7lYvTE?usp=drive_link' },
+  { icon: Monitor, title: 'Virtualization Software', description: 'VM setup and configuration', color: 'text-cyan-400', bgColor: 'bg-cyan-500/10', url: 'https://drive.google.com/drive/folders/1PV_jxVP0BeUe1nzGa5FfePnU7p7lYvTE?usp=drive_link' },
+  { icon: FolderOpen, title: "SKY's Educational Folder", description: 'Community contributed content', color: 'text-indigo-400', bgColor: 'bg-indigo-500/10', url: 'https://drive.google.com/drive/folders/1PV_jxVP0BeUe1nzGa5FfePnU7p7lYvTE?usp=drive_link' },
 ];
 
 const categories = ['All', 'Pentesting', 'Network', 'Web Security', 'OSINT', 'Certifications', 'CTF'];
