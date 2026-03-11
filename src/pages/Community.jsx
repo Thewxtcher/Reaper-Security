@@ -314,6 +314,9 @@ export default function Community() {
       {addChannelCategory !== null && (
         <AddChannelModal server={activeServer} category={addChannelCategory} onClose={() => setAddChannelCategory(null)} />
       )}
+      {showServerSettings && activeServer && (
+        <ServerSettingsModal server={activeServer} user={user} onClose={() => setShowServerSettings(false)} />
+      )}
     </div>
   );
 }
