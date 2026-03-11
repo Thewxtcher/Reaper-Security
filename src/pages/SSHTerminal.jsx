@@ -1,113 +1,75 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { base44 } from '@/api/base44Client';
-import { Terminal, Plus, X, Maximize2, Minimize2, LogIn, AlertCircle } from 'lucide-react';
+import { Terminal, Plus, X, Maximize2, Minimize2, LogIn, AlertCircle, Wifi, WifiOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 
-// Simulated SSH terminal — runs a local emulated shell
-// Real SSH requires a backend proxy. This provides a realistic UI with a built-in command emulator.
-const BANNER = `Reaper Security SSH Terminal v1.0
+const BANNER = `Reaper SSH Terminal v2.0
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Type 'help' for available commands
-Type 'connect <host> <user>' to simulate SSH
+Real SSH via backend proxy
+Type 'help' for commands
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
-
-const COMMANDS = {
-  help: () => `Available commands:
-  help              - Show this message
-  clear             - Clear terminal
-  whoami            - Show current user
-  ls                - List directory
-  pwd               - Print working directory
-  echo <text>       - Echo text
-  date              - Show current date/time
-  ping <host>       - Ping a host (simulated)
-  nmap <host>       - Nmap scan (simulated)
-  whois <domain>    - WHOIS lookup (simulated)
-  connect <h> <u>   - Simulate SSH connection
-  exit              - Close connection`,
-  
-  ls: () => `drwxr-xr-x  tools/
-drwxr-xr-x  scripts/
-drwxr-xr-x  exploits/
--rw-r--r--  README.md
--rw-r--r--  .bashrc`,
-  
-  pwd: () => '/home/reaper',
-  date: () => new Date().toString(),
-  clear: () => '__CLEAR__',
-};
-
-function processCommand(input, user) {
-  const parts = input.trim().split(/\s+/);
-  const cmd = parts[0]?.toLowerCase();
-  const args = parts.slice(1);
-
-  if (!cmd) return '';
-  if (cmd === 'clear') return '__CLEAR__';
-  if (cmd === 'whoami') return user?.full_name || user?.email || 'anonymous';
-  if (cmd === 'echo') return args.join(' ');
-  if (cmd === 'ping') {
-    const host = args[0] || 'localhost';
-    return `PING ${host}: 56 data bytes
-64 bytes from ${host}: icmp_seq=0 ttl=64 time=1.23 ms
-64 bytes from ${host}: icmp_seq=1 ttl=64 time=1.11 ms
-64 bytes from ${host}: icmp_seq=2 ttl=64 time=1.19 ms
---- ${host} ping statistics ---
-3 packets transmitted, 3 received, 0% packet loss`;
-  }
-  if (cmd === 'nmap') {
-    const host = args[0] || 'localhost';
-    return `Starting Nmap scan for ${host}
-PORT     STATE SERVICE
-22/tcp   open  ssh
-80/tcp   open  http
-443/tcp  open  https
-Nmap done: 1 IP address (1 host up) scanned in 2.34 seconds`;
-  }
-  if (cmd === 'whois') {
-    const domain = args[0] || 'example.com';
-    return `Domain: ${domain}
-Registrar: Example Registrar, Inc.
-Created: 2020-01-01
-Expires: 2030-01-01
-Name Servers: ns1.${domain}, ns2.${domain}
-Status: clientTransferProhibited`;
-  }
-  if (cmd === 'connect') {
-    const host = args[0] || 'host';
-    const user_ = args[1] || 'user';
-    return `Connecting to ${user_}@${host}...
-Note: Real SSH requires a backend proxy server.
-This terminal is for command practice and simulation.
-Connection simulated. Use the Reaper backend for live SSH.`;
-  }
-  if (cmd === 'exit') return 'Connection closed.';
-  if (COMMANDS[cmd]) return COMMANDS[cmd]();
-  return `${cmd}: command not found. Type 'help' for available commands.`;
-}
 
 function TerminalTab({ id, title, isActive, onSelect, onClose }) {
   return (
-    <button
-      onClick={onSelect}
-      className={`flex items-center gap-2 px-4 py-2 text-sm border-r border-white/5 transition-all ${isActive ? 'bg-[#1a1a1a] text-white' : 'bg-[#111] text-gray-500 hover:text-gray-300'}`}
-    >
+    <button onClick={onSelect}
+      className={`flex items-center gap-2 px-4 py-2 text-sm border-r border-white/5 transition-all ${isActive ? 'bg-[#1a1a1a] text-white' : 'bg-[#111] text-gray-500 hover:text-gray-300'}`}>
       <Terminal className="w-3.5 h-3.5" />
       {title}
-      <span onClick={e => { e.stopPropagation(); onClose(); }}
-        className="ml-1 hover:text-red-400 transition-colors">
+      <span onClick={e => { e.stopPropagation(); onClose(); }} className="ml-1 hover:text-red-400 transition-colors">
         <X className="w-3 h-3" />
       </span>
     </button>
   );
 }
 
-function TerminalPane({ user, sessionId }) {
+function ConnectModal({ onConnect, onClose }) {
+  const [host, setHost] = useState('');
+  const [port, setPort] = useState('22');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (host && username) onConnect({ host, port, username, password });
+  };
+
+  return (
+    <div className="absolute inset-0 bg-black/80 flex items-center justify-center z-10">
+      <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
+        className="bg-[#1a1a1a] border border-white/10 rounded-xl p-6 w-80">
+        <h3 className="text-white font-bold mb-4 flex items-center gap-2">
+          <Terminal className="w-4 h-4 text-green-400" /> SSH Connect
+        </h3>
+        <form onSubmit={handleSubmit} className="space-y-3">
+          <Input value={host} onChange={e => setHost(e.target.value)}
+            placeholder="IP or hostname" className="bg-black border-white/10 text-white" required />
+          <Input value={port} onChange={e => setPort(e.target.value)}
+            placeholder="Port (default 22)" className="bg-black border-white/10 text-white" />
+          <Input value={username} onChange={e => setUsername(e.target.value)}
+            placeholder="Username" className="bg-black border-white/10 text-white" required />
+          <Input type="password" value={password} onChange={e => setPassword(e.target.value)}
+            placeholder="Password" className="bg-black border-white/10 text-white" />
+          <div className="flex gap-2 pt-2">
+            <Button type="button" variant="outline" onClick={onClose}
+              className="flex-1 border-white/10 text-gray-400">Cancel</Button>
+            <Button type="submit" className="flex-1 bg-green-600 hover:bg-green-500">Connect</Button>
+          </div>
+        </form>
+      </motion.div>
+    </div>
+  );
+}
+
+function TerminalPane({ user }) {
   const [lines, setLines] = useState([{ type: 'banner', text: BANNER }]);
   const [input, setInput] = useState('');
   const [history, setHistory] = useState([]);
   const [histIdx, setHistIdx] = useState(-1);
+  const [showConnect, setShowConnect] = useState(false);
+  const [connection, setConnection] = useState(null); // { host, port, username, password }
+  const [isRunning, setIsRunning] = useState(false);
   const bottomRef = useRef(null);
   const inputRef = useRef(null);
 
@@ -115,16 +77,74 @@ function TerminalPane({ user, sessionId }) {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [lines]);
 
-  const runCommand = (cmd) => {
+  const addLine = (type, text) => setLines(prev => [...prev, { type, text }]);
+
+  const handleConnect = (creds) => {
+    setConnection(creds);
+    setShowConnect(false);
+    addLine('system', `Connecting to ${creds.username}@${creds.host}:${creds.port || 22}...`);
+    addLine('system', `Connected! Type commands below.`);
+  };
+
+  const runCommand = async (cmd) => {
     const trimmed = cmd.trim();
     if (!trimmed) return;
-    const newLine = { type: 'input', text: `reaper@terminal:~$ ${trimmed}` };
-    const output = processCommand(trimmed, user);
-    if (output === '__CLEAR__') {
-      setLines([]);
-    } else {
-      setLines(prev => [...prev, newLine, ...(output ? [{ type: 'output', text: output }] : [])]);
+
+    addLine('input', `${connection ? `${connection.username}@${connection.host}:~$` : 'local$'} ${trimmed}`);
+
+    if (trimmed === 'help') {
+      addLine('output', `Commands:
+  connect            - Open SSH connection dialog
+  disconnect         - Disconnect from current session
+  clear              - Clear terminal
+  <any shell cmd>    - Run on connected server (requires connection)`);
+      setInput('');
+      return;
     }
+
+    if (trimmed === 'clear') {
+      setLines([]);
+      setInput('');
+      return;
+    }
+
+    if (trimmed === 'disconnect') {
+      setConnection(null);
+      addLine('system', 'Disconnected.');
+      setInput('');
+      return;
+    }
+
+    if (trimmed === 'connect') {
+      setShowConnect(true);
+      setInput('');
+      return;
+    }
+
+    if (!connection) {
+      addLine('error', `No SSH session. Type 'connect' to start one.`);
+      setInput('');
+      return;
+    }
+
+    setIsRunning(true);
+    try {
+      const res = await base44.functions.invoke('sshProxy', {
+        host: connection.host,
+        port: connection.port,
+        username: connection.username,
+        password: connection.password,
+        command: trimmed,
+      });
+      const output = res?.data?.output;
+      const error = res?.data?.error;
+      if (error) addLine('error', error);
+      else addLine('output', output || '(no output)');
+    } catch (e) {
+      addLine('error', `Request failed: ${e.message}`);
+    }
+    setIsRunning(false);
+
     setHistory(prev => [trimmed, ...prev.slice(0, 49)]);
     setHistIdx(-1);
     setInput('');
@@ -136,36 +156,56 @@ function TerminalPane({ user, sessionId }) {
       const idx = Math.min(histIdx + 1, history.length - 1);
       setHistIdx(idx);
       setInput(history[idx] || '');
-    }
-    else if (e.key === 'ArrowDown') {
+    } else if (e.key === 'ArrowDown') {
       const idx = Math.max(histIdx - 1, -1);
       setHistIdx(idx);
       setInput(idx === -1 ? '' : history[idx] || '');
     }
   };
 
+  const prompt = connection ? `${connection.username}@${connection.host}:~$` : 'local$';
+
   return (
-    <div className="flex flex-col h-full bg-[#0d0d0d] font-mono text-sm cursor-text"
+    <div className="flex flex-col h-full bg-[#0d0d0d] font-mono text-sm relative cursor-text"
       onClick={() => inputRef.current?.focus()}>
+      {showConnect && <ConnectModal onConnect={handleConnect} onClose={() => setShowConnect(false)} />}
+
+      {/* Connection status bar */}
+      <div className="px-4 py-1.5 flex items-center gap-2 bg-[#111] border-b border-white/5 text-xs">
+        {connection ? (
+          <>
+            <Wifi className="w-3 h-3 text-green-400" />
+            <span className="text-green-400">{connection.username}@{connection.host}:{connection.port || 22}</span>
+            <button onClick={() => setShowConnect(true)} className="ml-auto text-gray-500 hover:text-white">Change</button>
+          </>
+        ) : (
+          <>
+            <WifiOff className="w-3 h-3 text-gray-600" />
+            <span className="text-gray-500">Not connected</span>
+            <button onClick={() => setShowConnect(true)} className="ml-auto text-blue-400 hover:text-blue-300">Connect...</button>
+          </>
+        )}
+      </div>
+
       <div className="flex-1 overflow-y-auto p-4 space-y-0.5">
         {lines.map((line, i) => (
           <div key={i} className={`whitespace-pre-wrap break-all leading-relaxed ${
             line.type === 'banner' ? 'text-red-400' :
-            line.type === 'input' ? 'text-green-400' : 'text-gray-300'
+            line.type === 'input' ? 'text-green-400' :
+            line.type === 'system' ? 'text-blue-400' :
+            line.type === 'error' ? 'text-red-400' : 'text-gray-300'
           }`}>{line.text}</div>
         ))}
-        <div className="flex items-center gap-2">
-          <span className="text-green-400">reaper@terminal:~$</span>
-          <input
-            ref={inputRef}
-            value={input}
-            onChange={e => setInput(e.target.value)}
-            onKeyDown={handleKeyDown}
-            className="flex-1 bg-transparent text-white outline-none caret-green-400"
-            autoFocus
-            spellCheck={false}
-          />
-        </div>
+        {isRunning && <div className="text-yellow-400 animate-pulse">Running...</div>}
+        {!isRunning && (
+          <div className="flex items-center gap-2">
+            <span className="text-green-400">{prompt}</span>
+            <input ref={inputRef} value={input} onChange={e => setInput(e.target.value)}
+              onKeyDown={handleKeyDown}
+              className="flex-1 bg-transparent text-white outline-none caret-green-400"
+              autoFocus spellCheck={false} />
+          </div>
+        )}
         <div ref={bottomRef} />
       </div>
     </div>
@@ -230,22 +270,18 @@ export default function SSHTerminal() {
             <h1 className="text-4xl font-bold text-white mb-2 flex items-center gap-3">
               <Terminal className="w-8 h-8 text-green-400" />SSH Terminal
             </h1>
-            <p className="text-gray-400">Browser-based terminal with command emulation. Real SSH requires backend configuration.</p>
-            <div className="mt-3 flex items-start gap-2 bg-yellow-500/10 border border-yellow-500/20 rounded-lg px-4 py-3 max-w-2xl">
-              <AlertCircle className="w-4 h-4 text-yellow-400 mt-0.5 flex-shrink-0" />
-              <p className="text-yellow-300 text-sm">This terminal runs locally in your browser. For live SSH sessions, a backend proxy server is required.</p>
+            <p className="text-gray-400">Real SSH via secure backend proxy. Enter your server IP and credentials to connect.</p>
+            <div className="mt-3 flex items-start gap-2 bg-blue-500/10 border border-blue-500/20 rounded-lg px-4 py-3 max-w-2xl">
+              <AlertCircle className="w-4 h-4 text-blue-400 mt-0.5 flex-shrink-0" />
+              <p className="text-blue-300 text-sm">Credentials are sent securely to the backend and never stored. Each command runs independently via SSH exec.</p>
             </div>
           </motion.div>
         </div>
       )}
 
       <div className={`${isFullscreen ? 'h-full' : 'max-w-6xl mx-auto px-4 sm:px-6 lg:px-8'}`}>
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className={`${isFullscreen ? 'h-full' : 'h-[600px]'} flex flex-col rounded-xl overflow-hidden border border-white/10 shadow-2xl`}
-        >
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
+          className={`${isFullscreen ? 'h-full' : 'h-[620px]'} flex flex-col rounded-xl overflow-hidden border border-white/10 shadow-2xl`}>
           {/* Terminal Chrome */}
           <div className="flex items-center bg-[#1a1a1a] border-b border-white/10 flex-shrink-0">
             <div className="flex items-center gap-2 px-4 py-2 border-r border-white/10">
@@ -256,8 +292,7 @@ export default function SSHTerminal() {
             <div className="flex-1 flex overflow-x-auto">
               {tabs.map(tab => (
                 <TerminalTab key={tab.id} {...tab} isActive={activeTab === tab.id}
-                  onSelect={() => setActiveTab(tab.id)}
-                  onClose={() => closeTab(tab.id)} />
+                  onSelect={() => setActiveTab(tab.id)} onClose={() => closeTab(tab.id)} />
               ))}
               <button onClick={addTab} className="px-3 py-2 text-gray-600 hover:text-white transition-colors">
                 <Plus className="w-4 h-4" />
@@ -269,11 +304,10 @@ export default function SSHTerminal() {
             </button>
           </div>
 
-          {/* Terminal content */}
           <div className="flex-1 overflow-hidden">
             {tabs.map(tab => (
               <div key={tab.id} className={`h-full ${activeTab === tab.id ? 'block' : 'hidden'}`}>
-                <TerminalPane user={user} sessionId={tab.id} />
+                <TerminalPane user={user} />
               </div>
             ))}
           </div>
