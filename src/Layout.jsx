@@ -25,8 +25,7 @@ const navGroups = [
   {
     label: 'Community',
     items: [
-      { name: 'Servers', icon: Users, page: 'Community' },
-      { name: 'Messages', icon: MessageCircle, page: 'Community' },
+      { name: 'Community', icon: Users, page: 'Community' },
       { name: 'Forum', icon: MessageSquare, page: 'Forum' },
     ]
   },
