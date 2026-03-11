@@ -90,6 +90,27 @@ export default function CreateServerModal({ user, onClose, onCreated }) {
               className="mt-1 bg-[#0a0a0a] border-white/10 text-white placeholder:text-gray-600"
             />
           </div>
+          <div>
+            <Label className="text-gray-300 text-xs uppercase tracking-wide block mb-2">Visibility</Label>
+            <div className="flex gap-3">
+              <button onClick={() => setIsPrivate(false)}
+                className={`flex-1 flex items-center gap-2 p-3 rounded-xl border transition-colors ${!isPrivate ? 'border-green-500/50 bg-green-500/10' : 'border-white/10 bg-black/40'}`}>
+                <Globe className={`w-4 h-4 ${!isPrivate ? 'text-green-400' : 'text-gray-500'}`} />
+                <div className="text-left">
+                  <div className={`text-sm font-medium ${!isPrivate ? 'text-green-400' : 'text-gray-400'}`}>Public</div>
+                  <div className="text-xs text-gray-600">In Discover</div>
+                </div>
+              </button>
+              <button onClick={() => setIsPrivate(true)}
+                className={`flex-1 flex items-center gap-2 p-3 rounded-xl border transition-colors ${isPrivate ? 'border-red-500/50 bg-red-500/10' : 'border-white/10 bg-black/40'}`}>
+                <Lock className={`w-4 h-4 ${isPrivate ? 'text-red-400' : 'text-gray-500'}`} />
+                <div className="text-left">
+                  <div className={`text-sm font-medium ${isPrivate ? 'text-red-400' : 'text-gray-400'}`}>Private</div>
+                  <div className="text-xs text-gray-600">Invite only</div>
+                </div>
+              </button>
+            </div>
+          </div>
         </div>
 
         <div className="flex gap-3 mt-6">
