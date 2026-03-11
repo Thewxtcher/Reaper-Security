@@ -69,6 +69,7 @@ import ThreatIntel from './pages/ThreatIntel';
 import UserProfile from './pages/UserProfile';
 import AdminDashboard from './pages/AdminDashboard';
 import Profile from './pages/Profile';
+import Marketplace from './pages/Marketplace';
 import __Layout from './Layout.jsx';
 
 
@@ -95,6 +96,7 @@ export const PAGES = {
     "UserProfile": UserProfile,
     "AdminDashboard": AdminDashboard,
     "Profile": Profile,
+    "Marketplace": Marketplace,
 }
 
 export const pagesConfig = {
