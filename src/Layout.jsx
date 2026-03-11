@@ -59,6 +59,12 @@ const navGroups = [
       { name: 'Site Upgrades', icon: Rocket, page: 'Upgrades' },
     ]
   },
+  {
+    label: 'Professionals',
+    items: [
+      { name: 'Apply as Provider', icon: Briefcase, page: 'ServiceProviderApply' },
+    ]
+  },
 ];
 
 // Flat list for mobile
