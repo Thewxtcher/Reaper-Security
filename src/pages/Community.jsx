@@ -124,6 +124,13 @@ export default function Community() {
     setViewMode('friends');
     setActiveServer(null);
     setInVideoCall(false);
+    setShowDiscover(false);
+  };
+
+  const handleDiscover = () => {
+    setShowDiscover(true);
+    setActiveServer(null);
+    setInVideoCall(false);
   };
 
   const handleStartDM = async (friendEmail, friendName) => {
