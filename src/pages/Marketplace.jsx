@@ -353,10 +353,12 @@ export default function Marketplace() {
           filteredThemes.length === 0 ? (
             <div className="text-center py-20">
               <Palette className="w-12 h-12 text-gray-700 mx-auto mb-4" />
-              <p className="text-gray-500">No themes yet. Create one in the Themes page!</p>
-              <Link to={createPageUrl('Themes')} className="mt-4 inline-block">
-                <Button className="bg-purple-600 hover:bg-purple-500 mt-4"><Plus className="w-4 h-4 mr-2" />Create Theme</Button>
-              </Link>
+              <p className="text-gray-500">No themes yet. Be the first to create one!</p>
+              {isAuthenticated && (
+                <Button onClick={() => setShowCreateTheme(true)} className="bg-purple-600 hover:bg-purple-500 mt-4">
+                  <Wand2 className="w-4 h-4 mr-2" />Create Theme
+                </Button>
+              )}
             </div>
           ) : (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
