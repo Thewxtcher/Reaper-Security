@@ -46,6 +46,29 @@ const sortOptions = [
   { value: 'starred', label: 'Stars', icon: Star },
 ];
 
+function downloadProject(project) {
+  const lang = langExtensions[project.language?.toLowerCase()] || 'txt';
+  const blob = new Blob([project.code || ''], { type: 'text/plain' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${project.name?.replace(/\s+/g, '_') || 'project'}.${lang}`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+const langExtensions = {
+  python: 'py', javascript: 'js', typescript: 'ts', jsx: 'jsx', tsx: 'tsx',
+  bash: 'sh', powershell: 'ps1', ruby: 'rb', go: 'go', rust: 'rs',
+  c: 'c', cpp: 'cpp', csharp: 'cs', java: 'java', kotlin: 'kt', swift: 'swift',
+  php: 'php', perl: 'pl', lua: 'lua', r: 'r', scala: 'scala', haskell: 'hs',
+  elixir: 'ex', dart: 'dart', groovy: 'groovy', sql: 'sql', html: 'html',
+  css: 'css', scss: 'scss', json: 'json', yaml: 'yml', xml: 'xml',
+  markdown: 'md', assembly: 'asm', dockerfile: 'Dockerfile', terraform: 'tf',
+};
+
 function RepoCard({ project, index }) {
   return (
     <motion.div
@@ -53,8 +76,7 @@ function RepoCard({ project, index }) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.04 }}
     >
-      <Link to={createPageUrl(`CodeProject?id=${project.id}`)}>
-        <div className="bg-[#111]/80 border border-white/5 hover:border-green-500/20 rounded-xl p-5 transition-all hover:-translate-y-0.5 group h-full">
+      <div className="bg-[#111]/80 border border-white/5 hover:border-green-500/20 rounded-xl p-5 transition-all hover:-translate-y-0.5 group h-full relative">
           <div className="flex items-start justify-between mb-3">
             <div className="flex items-center gap-2 min-w-0">
               <div className="w-8 h-8 rounded-lg bg-green-500/10 border border-green-500/20 flex items-center justify-center flex-shrink-0">
