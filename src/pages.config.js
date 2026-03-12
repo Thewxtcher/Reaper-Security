@@ -53,6 +53,7 @@ import CodeEditor from './pages/CodeEditor';
 import CodeHub from './pages/CodeHub';
 import CodeProject from './pages/CodeProject';
 import Community from './pages/Community';
+import CommunityHub from './pages/CommunityHub';
 import Contact from './pages/Contact';
 import CreateCodeProject from './pages/CreateCodeProject';
 import CreateForumPost from './pages/CreateForumPost';
@@ -60,20 +61,19 @@ import CyberLabs from './pages/CyberLabs';
 import Forum from './pages/Forum';
 import ForumRules from './pages/ForumRules';
 import ForumThread from './pages/ForumThread';
+import Home from './pages/Home';
 import Learning from './pages/Learning';
 import Marketplace from './pages/Marketplace';
 import Profile from './pages/Profile';
 import Research from './pages/Research';
 import ResearchPost from './pages/ResearchPost';
 import SSHTerminal from './pages/SSHTerminal';
+import ServiceProviderApply from './pages/ServiceProviderApply';
 import Services from './pages/Services';
 import Themes from './pages/Themes';
 import ThreatIntel from './pages/ThreatIntel';
 import Upgrades from './pages/Upgrades';
 import UserProfile from './pages/UserProfile';
-import ServiceProviderApply from './pages/ServiceProviderApply';
-import Home from './pages/Home';
-import CommunityHub from './pages/CommunityHub';
 import __Layout from './Layout.jsx';
 
 
@@ -84,6 +84,7 @@ export const PAGES = {
     "CodeHub": CodeHub,
     "CodeProject": CodeProject,
     "Community": Community,
+    "CommunityHub": CommunityHub,
     "Contact": Contact,
     "CreateCodeProject": CreateCodeProject,
     "CreateForumPost": CreateForumPost,
@@ -91,20 +92,19 @@ export const PAGES = {
     "Forum": Forum,
     "ForumRules": ForumRules,
     "ForumThread": ForumThread,
+    "Home": Home,
     "Learning": Learning,
     "Marketplace": Marketplace,
     "Profile": Profile,
     "Research": Research,
     "ResearchPost": ResearchPost,
     "SSHTerminal": SSHTerminal,
+    "ServiceProviderApply": ServiceProviderApply,
     "Services": Services,
     "Themes": Themes,
     "ThreatIntel": ThreatIntel,
     "Upgrades": Upgrades,
     "UserProfile": UserProfile,
-    "ServiceProviderApply": ServiceProviderApply,
-    "Home": Home,
-    "CommunityHub": CommunityHub,
 }
 
 export const pagesConfig = {

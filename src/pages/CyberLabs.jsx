@@ -10,6 +10,10 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
+import HackerTerminal from '../components/cyberlabs/HackerTerminal';
+import CategoryBadges from '../components/cyberlabs/CategoryBadges';
+import XPLevelUpToast from '../components/cyberlabs/XPLevelUpToast';
+import GlobalLeaderboard from '../components/cyberlabs/GlobalLeaderboard';
 
 const TIER_CONFIG = {
   bronze:   { color: 'text-amber-600',   bg: 'bg-amber-600/10',   border: 'border-amber-600/30',   xp: 0 },
