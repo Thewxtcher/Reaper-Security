@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '../utils';
+import { base44 } from '@/api/base44Client';
 import {
   Save, Download, Plus, X, File, Code, Terminal as TerminalIcon,
   ArrowLeft, Copy, Check, Folder, FolderOpen, ChevronDown, ChevronRight,
-  Search, GitBranch, Settings, Play, Square, Trash2, RefreshCw
+  Search, GitBranch, Settings, Play, Square, Trash2, RefreshCw,
+  Wifi, WifiOff
 } from 'lucide-react';
 
 // ─── Constants ───────────────────────────────────────────────────────────────
