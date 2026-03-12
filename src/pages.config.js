@@ -74,6 +74,7 @@ import ThreatIntel from './pages/ThreatIntel';
 import Upgrades from './pages/Upgrades';
 import UserProfile from './pages/UserProfile';
 import Legal from './pages/Legal';
+import CodeEditor from './pages/CodeEditor';
 import __Layout from './Layout.jsx';
 
 
@@ -105,6 +106,7 @@ export const PAGES = {
     "Upgrades": Upgrades,
     "UserProfile": UserProfile,
     "Legal": Legal,
+    "CodeEditor": CodeEditor,
 }
 
 export const pagesConfig = {
