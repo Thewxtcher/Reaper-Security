@@ -55,14 +55,6 @@ function saveFiles(files) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(files));
 }
 
-function loadTerminalHistory() {
-  try {
-    const saved = localStorage.getItem(TERMINAL_KEY);
-    if (saved) return JSON.parse(saved);
-  } catch {}
-  return [{ type: 'system', text: 'Reaper Terminal v1.0 — Type "help" for commands' }];
-}
-
 // ─── Menu Bar ────────────────────────────────────────────────────────────────
 
 function MenuBar({ onAction, activeFile, files }) {
