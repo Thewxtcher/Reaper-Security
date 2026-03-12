@@ -197,7 +197,8 @@ export default function CyberLabs() {
     if (!user) return;
     const existing = await base44.entities.UserSkill.filter({ user_email: user.email });
     const current = existing[0];
-    const newXp = (current?.xp || 0) + xpEarned;
+    const prevXp = current?.xp || 0;
+    const newXp = prevXp + xpEarned;
     const newTier = Object.entries(TIER_CONFIG).reduce((acc, [tier, cfg]) => newXp >= cfg.xp ? tier : acc, 'bronze');
     if (current) {
       await base44.entities.UserSkill.update(current.id, {
@@ -210,6 +211,7 @@ export default function CyberLabs() {
         xp: xpEarned, tier: newTier, challenges_solved: 1, technical_score: xpEarned
       });
     }
+    setXpToast({ show: true, xpGained: xpEarned, prevXp, newXp });
     queryClient.invalidateQueries({ queryKey: ['mySkill'] });
     queryClient.invalidateQueries({ queryKey: ['leaderboard'] });
     queryClient.invalidateQueries({ queryKey: ['mySubmissions'] });
