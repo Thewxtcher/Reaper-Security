@@ -463,10 +463,6 @@ export default function CodeEditor() {
   // Auto-save on every change
   useEffect(() => { saveFiles(files); }, [files]);
   useEffect(() => { localStorage.setItem(ACTIVE_KEY, activeId); }, [activeId]);
-  useEffect(() => {
-    localStorage.setItem(TERMINAL_KEY, JSON.stringify(terminalHistory.slice(-200)));
-  }, [terminalHistory]);
-
   // Global keyboard shortcuts
   useEffect(() => {
     const handler = (e) => {
