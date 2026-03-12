@@ -153,6 +153,7 @@ export default function CyberLabs() {
   const [isAuth, setIsAuth] = useState(false);
   const [activeCategory, setActiveCategory] = useState('all');
   const [activeDiff, setActiveDiff] = useState('all');
+  const [xpToast, setXpToast] = useState({ show: false, xpGained: 0, prevXp: 0, newXp: 0 });
   const queryClient = useQueryClient();
 
   useEffect(() => {
