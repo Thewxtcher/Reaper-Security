@@ -142,6 +142,7 @@ export default function CodeHub() {
   const tabs = [
     { id: 'browse', label: 'Explore', icon: FolderOpen },
     { id: 'folders', label: 'My Folders', icon: Folder },
+    { id: 'extreme', label: 'Extreme Tools', icon: Skull },
   ];
 
   return (
