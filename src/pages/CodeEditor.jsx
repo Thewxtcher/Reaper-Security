@@ -745,11 +745,8 @@ export default function CodeEditor() {
           {/* Terminal */}
           {showTerminal && (
             <TerminalPanel
-              history={terminalHistory}
-              input={terminalInput}
-              setInput={setTerminalInput}
-              onCommand={handleTerminalCommand}
-              onClear={() => setTerminalHistory([{ type: 'system', text: 'Terminal cleared.' }])}
+              activeFile={activeFile}
+              onClose={() => setShowTerminal(false)}
             />
           )}
         </div>
