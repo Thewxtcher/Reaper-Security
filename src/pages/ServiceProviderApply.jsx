@@ -198,7 +198,14 @@ export default function ServiceProviderApply() {
                 </div>
               )}
               {app?.status === 'approved' && (
-                <p className="text-gray-400 text-sm mt-2">Congratulations! You're now a verified service provider on Reaper Security.</p>
+                <div className="mt-2">
+                  <p className="text-gray-400 text-sm mb-4">Congratulations! You're now a verified service provider on Reaper Security.</p>
+                  <Link to={createPageUrl('ProviderSetup')}>
+                    <button className="px-5 py-2 bg-green-600 hover:bg-green-500 text-white text-sm rounded-lg font-medium transition-colors">
+                      Set Up Your Provider Page →
+                    </button>
+                  </Link>
+                </div>
               )}
               {app?.admin_notes && (
                 <div className="mt-4 p-4 bg-white/5 rounded-xl text-left">

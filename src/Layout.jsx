@@ -57,6 +57,7 @@ const NAV_SECTIONS = [
       { name: 'Marketplace', icon: Store, page: 'Marketplace' },
       { name: 'Site Upgrades', icon: Rocket, page: 'Upgrades' },
       { name: 'Apply as Provider', icon: Briefcase, page: 'ServiceProviderApply' },
+      { name: 'Provider Dashboard', icon: Rocket, page: 'ProviderSetup' },
     ]
   },
   {
