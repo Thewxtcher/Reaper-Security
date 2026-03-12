@@ -545,7 +545,7 @@ export default function CodeEditor() {
     switch (action) {
       case 'new-file': setShowNewFile(true); break;
       case 'save': handleSave(); break;
-      case 'save-all': saveFiles(files); setSavedIndicator(true); setTimeout(() => setSavedIndicator(false), 1500); termLog('All files saved.', 'success'); break;
+      case 'save-all': saveFiles(files); setSavedIndicator(true); setTimeout(() => setSavedIndicator(false), 1500); break;
       case 'download': downloadFile(); break;
       case 'download-all': files.forEach(f => downloadFile(f)); break;
       case 'close-file': deleteFile(activeId); break;
