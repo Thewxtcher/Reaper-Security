@@ -3,11 +3,12 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '../utils';
 import { base44 } from '@/api/base44Client';
 import {
-  Save, Download, Plus, X, File, Code, Terminal as TerminalIcon,
-  ArrowLeft, Copy, Check, Folder, FolderOpen, ChevronDown, ChevronRight,
-  Search, GitBranch, Settings, Play, Square, Trash2, RefreshCw,
-  Wifi, WifiOff
+  Save, Download, Plus, X, Code, Terminal as TerminalIcon,
+  ArrowLeft, Copy, Check, FolderOpen, GitBranch, Settings, Play, Trash2,
+  Wifi, WifiOff, Puzzle, Search
 } from 'lucide-react';
+import ExplorerPanel from '../components/editor/ExplorerPanel';
+import EditorPluginsPanel from '../components/editor/EditorPluginsPanel';
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
@@ -36,79 +37,70 @@ const langColors = {
 };
 
 const STORAGE_KEY = 'reaper_editor_files_v2';
-const ACTIVE_KEY = 'reaper_editor_active_v2';
+const ACTIVE_KEY  = 'reaper_editor_active_v2';
+const FOLDERS_KEY = 'reaper_editor_folders_v1';
 
 const defaultFiles = [
-  { id: '1', name: 'main.py', language: 'python', content: '# Welcome to Reaper Code Editor\n# A powerful VS Code-style editor in your browser\n\ndef greet(name):\n    return f"Hello, {name}!"\n\nprint(greet("World"))\n' },
-  { id: '2', name: 'exploit.js', language: 'javascript', content: '// JavaScript Security Script\nconst target = "localhost";\nconst port = 8080;\n\nasync function probe(host, port) {\n  console.log(`Probing ${host}:${port}...`);\n  // Add your logic here\n}\n\nprobe(target, port);\n' },
+  { id: '1', name: 'main.py', language: 'python', folder_id: null, content: '# Welcome to Reaper Code Editor\n\ndef greet(name):\n    return f"Hello, {name}!"\n\nprint(greet("World"))\n' },
+  { id: '2', name: 'exploit.js', language: 'javascript', folder_id: null, content: '// JavaScript Security Script\nconst target = "localhost";\nconst port = 8080;\n\nasync function probe(host, port) {\n  console.log(`Probing ${host}:${port}...`);\n}\n\nprobe(target, port);\n' },
 ];
 
-function loadFiles() {
-  try {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) return JSON.parse(saved);
-  } catch {}
-  return defaultFiles;
-}
-
-function saveFiles(files) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(files));
-}
+function loadFiles()   { try { const s = localStorage.getItem(STORAGE_KEY); if (s) return JSON.parse(s); } catch {} return defaultFiles; }
+function saveFiles(f)  { localStorage.setItem(STORAGE_KEY, JSON.stringify(f)); }
+function loadFolders() { try { const s = localStorage.getItem(FOLDERS_KEY); if (s) return JSON.parse(s); } catch {} return []; }
+function saveFolders(f){ localStorage.setItem(FOLDERS_KEY, JSON.stringify(f)); }
 
 // ─── Menu Bar ────────────────────────────────────────────────────────────────
 
-function MenuBar({ onAction, activeFile, files }) {
+function MenuBar({ onAction, activeFile }) {
   const [openMenu, setOpenMenu] = useState(null);
 
   const menus = {
     File: [
-      { label: 'New File', shortcut: 'Ctrl+N', action: 'new-file' },
-      { label: 'Save', shortcut: 'Ctrl+S', action: 'save' },
-      { label: 'Save All', shortcut: 'Ctrl+Shift+S', action: 'save-all' },
+      { label: 'New File',        shortcut: 'Ctrl+N',         action: 'new-file' },
+      { label: 'New Folder',      shortcut: 'Ctrl+Shift+N',   action: 'new-folder' },
+      { label: 'Save',            shortcut: 'Ctrl+S',         action: 'save' },
+      { label: 'Save All',        shortcut: 'Ctrl+Shift+S',   action: 'save-all' },
       { divider: true },
       { label: 'Download Current File', shortcut: 'Ctrl+Shift+D', action: 'download' },
-      { label: 'Download All as ZIP', action: 'download-all' },
+      { label: 'Download All',    action: 'download-all' },
       { divider: true },
-      { label: 'Close File', shortcut: 'Ctrl+W', action: 'close-file' },
-      { label: 'Exit to Code Hub', action: 'exit' },
+      { label: 'Close File',      shortcut: 'Ctrl+W',         action: 'close-file' },
+      { label: 'Exit to Code Hub',                            action: 'exit' },
     ],
     Edit: [
-      { label: 'Copy All', shortcut: 'Ctrl+A Ctrl+C', action: 'copy-all' },
-      { label: 'Select All', shortcut: 'Ctrl+A', action: 'select-all' },
+      { label: 'Copy All',        shortcut: 'Ctrl+A Ctrl+C',  action: 'copy-all' },
+      { label: 'Select All',      shortcut: 'Ctrl+A',         action: 'select-all' },
       { divider: true },
-      { label: 'Toggle Comment', shortcut: 'Ctrl+/', action: 'toggle-comment' },
-      { label: 'Indent Line', shortcut: 'Tab', action: 'indent' },
+      { label: 'Indent Line',     shortcut: 'Tab',            action: 'indent' },
     ],
     View: [
-      { label: 'Toggle Sidebar', shortcut: 'Ctrl+B', action: 'toggle-sidebar' },
-      { label: 'Toggle Terminal', shortcut: 'Ctrl+`', action: 'toggle-terminal' },
+      { label: 'Toggle Sidebar',  shortcut: 'Ctrl+B',         action: 'toggle-sidebar' },
+      { label: 'Toggle Terminal', shortcut: 'Ctrl+`',         action: 'toggle-terminal' },
       { divider: true },
-      { label: 'Zoom In', shortcut: 'Ctrl++', action: 'zoom-in' },
-      { label: 'Zoom Out', shortcut: 'Ctrl+-', action: 'zoom-out' },
-      { label: 'Reset Zoom', shortcut: 'Ctrl+0', action: 'zoom-reset' },
+      { label: 'Zoom In',         shortcut: 'Ctrl++',         action: 'zoom-in' },
+      { label: 'Zoom Out',        shortcut: 'Ctrl+-',         action: 'zoom-out' },
+      { label: 'Reset Zoom',      shortcut: 'Ctrl+0',         action: 'zoom-reset' },
     ],
     Run: [
-      { label: 'Run Code', shortcut: 'F5', action: 'run' },
-      { label: 'Run in Terminal', shortcut: 'Ctrl+F5', action: 'run-terminal' },
+      { label: 'Run Code',        shortcut: 'F5',             action: 'run' },
       { divider: true },
-      { label: 'Stop Execution', shortcut: 'Shift+F5', action: 'stop' },
+      { label: 'Stop Execution',  shortcut: 'Shift+F5',       action: 'stop' },
     ],
     Terminal: [
-      { label: 'New Terminal', shortcut: 'Ctrl+Shift+`', action: 'toggle-terminal' },
-      { label: 'Clear Terminal', action: 'clear-terminal' },
-      { divider: true },
-      { label: 'Copy Terminal Output', action: 'copy-terminal' },
+      { label: 'New Terminal',    shortcut: 'Ctrl+Shift+`',   action: 'toggle-terminal' },
+      { label: 'Clear Terminal',                              action: 'clear-terminal' },
     ],
   };
 
   useEffect(() => {
-    const handler = () => setOpenMenu(null);
-    window.addEventListener('click', handler);
-    return () => window.removeEventListener('click', handler);
+    const h = () => setOpenMenu(null);
+    window.addEventListener('click', h);
+    return () => window.removeEventListener('click', h);
   }, []);
 
   return (
-    <div className="flex items-center h-7 bg-[#3c3c3c] border-b border-black/40 select-none flex-shrink-0 px-2 gap-0">
+    <div className="flex items-center h-7 bg-[#3c3c3c] border-b border-black/40 select-none flex-shrink-0 px-2">
       {Object.entries(menus).map(([name, items]) => (
         <div key={name} className="relative">
           <button
@@ -137,10 +129,8 @@ function MenuBar({ onAction, activeFile, files }) {
           )}
         </div>
       ))}
-      <div className="ml-auto flex items-center gap-2 pr-2">
-        <span className="text-gray-500 text-[11px] font-mono truncate max-w-xs">
-          {activeFile?.name || ''}
-        </span>
+      <div className="ml-auto pr-2">
+        <span className="text-gray-500 text-[11px] font-mono truncate max-w-xs">{activeFile?.name || ''}</span>
       </div>
     </div>
   );
@@ -151,9 +141,10 @@ function MenuBar({ onAction, activeFile, files }) {
 function ActivityBar({ activePanel, onPanelChange }) {
   const items = [
     { id: 'explorer', icon: FolderOpen, title: 'Explorer' },
-    { id: 'search', icon: Search, title: 'Search' },
-    { id: 'git', icon: GitBranch, title: 'Source Control' },
-    { id: 'settings', icon: Settings, title: 'Settings' },
+    { id: 'search',   icon: Search,     title: 'Search' },
+    { id: 'plugins',  icon: Puzzle,     title: 'AI Plugins' },
+    { id: 'git',      icon: GitBranch,  title: 'Source Control' },
+    { id: 'settings', icon: Settings,   title: 'Settings' },
   ];
   return (
     <div className="w-12 flex flex-col items-center bg-[#333333] border-r border-black/30 flex-shrink-0 pt-1">
@@ -170,61 +161,6 @@ function ActivityBar({ activePanel, onPanelChange }) {
           <item.icon className="w-5 h-5" />
         </button>
       ))}
-    </div>
-  );
-}
-
-// ─── File Explorer Panel ──────────────────────────────────────────────────────
-
-function ExplorerPanel({ files, activeId, onSelect, onDelete, onNew, showNewFile, newFileName, setNewFileName, onAddFile, setShowNewFile }) {
-  return (
-    <div className="w-56 bg-[#252526] border-r border-black/30 flex flex-col flex-shrink-0 overflow-hidden">
-      <div className="flex items-center justify-between px-3 py-2 border-b border-black/20">
-        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Explorer</span>
-        <button onClick={onNew} title="New File" className="text-gray-500 hover:text-white transition-colors p-0.5">
-          <Plus className="w-3.5 h-3.5" />
-        </button>
-      </div>
-      <div className="px-2 py-1">
-        <div className="flex items-center gap-1 text-[10px] text-gray-500 uppercase tracking-wider px-2 py-1">
-          <ChevronDown className="w-3 h-3" /> OPEN FILES
-        </div>
-        <div className="space-y-0.5">
-          {files.map(f => (
-            <div
-              key={f.id}
-              onClick={() => onSelect(f.id)}
-              className={`flex items-center justify-between px-2 py-1 rounded text-xs cursor-pointer group transition-colors
-                ${f.id === activeId ? 'bg-[#094771] text-white' : 'text-gray-400 hover:bg-[#2a2d2e] hover:text-white'}`}
-            >
-              <div className="flex items-center gap-2 min-w-0">
-                <File className="w-3 h-3 flex-shrink-0" style={{ color: langColors[f.language] || '#9ca3af' }} />
-                <span className="truncate">{f.name}</span>
-              </div>
-              {files.length > 1 && (
-                <button
-                  onClick={e => { e.stopPropagation(); onDelete(f.id); }}
-                  className="opacity-0 group-hover:opacity-100 text-gray-500 hover:text-red-400 transition-all ml-1 flex-shrink-0"
-                >
-                  <X className="w-3 h-3" />
-                </button>
-              )}
-            </div>
-          ))}
-        </div>
-        {showNewFile && (
-          <div className="mt-1">
-            <input
-              autoFocus
-              value={newFileName}
-              onChange={e => setNewFileName(e.target.value)}
-              onKeyDown={e => { if (e.key === 'Enter') onAddFile(); if (e.key === 'Escape') setShowNewFile(false); }}
-              placeholder="filename.py"
-              className="w-full bg-[#3c3c3c] border border-blue-500/60 text-white text-xs px-2 py-1 rounded outline-none"
-            />
-          </div>
-        )}
-      </div>
     </div>
   );
 }
@@ -263,7 +199,7 @@ function SSHConnectModal({ onConnect, onClose }) {
 function TerminalPanel({ onClose, activeFile }) {
   const [lines, setLines] = useState([
     { type: 'system', text: 'Reaper Editor Terminal — Live SSH + Code Runner' },
-    { type: 'system', text: 'Type "connect" to start an SSH session, "run" to execute current file, "help" for all commands.' },
+    { type: 'system', text: 'Type "connect" to start an SSH session, "run" to execute current file, "help" for commands.' },
   ]);
   const [input, setInput] = useState('');
   const [cmdHistory, setCmdHistory] = useState([]);
@@ -287,21 +223,15 @@ function TerminalPanel({ onClose, activeFile }) {
 
   const runSSHCommand = async (cmd) => {
     setIsRunning(true);
-    try {
-      const res = await base44.functions.invoke('sshProxy', {
-        host: connection.host,
-        port: connection.port,
-        username: connection.username,
-        password: connection.password,
-        command: cmd,
-      });
-      const output = res?.data?.output;
-      const error = res?.data?.error;
-      if (error) addLine('error', error);
-      else addLine('output', output || '(no output)');
-    } catch (e) {
-      addLine('error', `Request failed: ${e.message}`);
-    }
+    const res = await base44.functions.invoke('sshProxy', {
+      host: connection.host, port: connection.port,
+      username: connection.username, password: connection.password,
+      command: cmd,
+    });
+    const output = res?.data?.output;
+    const error = res?.data?.error;
+    if (error) addLine('error', error);
+    else addLine('output', output || '(no output)');
     setIsRunning(false);
   };
 
@@ -311,73 +241,49 @@ function TerminalPanel({ onClose, activeFile }) {
     setInput('');
     setCmdHistory(h => [cmd, ...h.slice(0, 49)]);
     setHistIdx(-1);
-
     const prompt = connection ? `${connection.username}@${connection.host}:~$` : 'local$';
     addLine('input', `${prompt} ${cmd}`);
 
     if (cmd === 'help') {
-      addLine('system', [
-        'Commands:',
-        '  connect          — Open SSH connection dialog',
-        '  disconnect       — End SSH session',
-        '  run              — Run current editor file on SSH server',
-        '  clear            — Clear terminal',
-        '  ls / pwd / cat   — File system commands (requires SSH)',
-        '  <any shell cmd>  — Execute on connected server',
-      ].join('\n'));
+      addLine('system', 'connect — SSH dialog | disconnect — end session | run — execute current file | clear — clear terminal | <cmd> — run on server');
       return;
     }
     if (cmd === 'clear') { setLines([]); return; }
     if (cmd === 'connect') { setShowConnect(true); return; }
-    if (cmd === 'disconnect') {
-      setConnection(null);
-      addLine('system', 'Disconnected.');
-      return;
-    }
+    if (cmd === 'disconnect') { setConnection(null); addLine('system', 'Disconnected.'); return; }
 
     if (cmd === 'run') {
       if (!activeFile) { addLine('error', 'No active file.'); return; }
       if (!connection) { addLine('error', 'No SSH session. Type "connect" first.'); return; }
       addLine('system', `Running ${activeFile.name} on ${connection.host}...`);
-      const langRunners = {
+      const runners = {
         python: `python3 -c ${JSON.stringify(activeFile.content)}`,
         javascript: `node -e ${JSON.stringify(activeFile.content)}`,
         bash: `bash -c ${JSON.stringify(activeFile.content)}`,
         ruby: `ruby -e ${JSON.stringify(activeFile.content)}`,
         php: `php -r ${JSON.stringify(activeFile.content)}`,
       };
-      const runCmd = langRunners[activeFile.language];
-      if (!runCmd) { addLine('error', `No runner for language: ${activeFile.language}. Upload the file manually.`); return; }
+      const runCmd = runners[activeFile.language];
+      if (!runCmd) { addLine('error', `No runner for: ${activeFile.language}`); return; }
       await runSSHCommand(runCmd);
       return;
     }
 
-    if (!connection) {
-      addLine('error', `Not connected. Type "connect" to start an SSH session.`);
-      return;
-    }
-
+    if (!connection) { addLine('error', 'Not connected. Type "connect" first.'); return; }
     await runSSHCommand(cmd);
   };
 
   const handleKeyDown = (e) => {
-    if (e.key === 'Enter') { handleCommand(); }
-    else if (e.key === 'ArrowUp') {
-      const idx = Math.min(histIdx + 1, cmdHistory.length - 1);
-      setHistIdx(idx); setInput(cmdHistory[idx] || '');
-    } else if (e.key === 'ArrowDown') {
-      const idx = Math.max(histIdx - 1, -1);
-      setHistIdx(idx); setInput(idx === -1 ? '' : cmdHistory[idx] || '');
-    }
+    if (e.key === 'Enter') handleCommand();
+    else if (e.key === 'ArrowUp') { const idx = Math.min(histIdx + 1, cmdHistory.length - 1); setHistIdx(idx); setInput(cmdHistory[idx] || ''); }
+    else if (e.key === 'ArrowDown') { const idx = Math.max(histIdx - 1, -1); setHistIdx(idx); setInput(idx === -1 ? '' : cmdHistory[idx] || ''); }
   };
 
   const prompt = connection ? `${connection.username}@${connection.host}:~$` : 'local$';
 
   return (
-    <div className="flex flex-col bg-[#1e1e1e] border-t border-black/40 relative" style={{ height: 220 }}>
+    <div className="flex flex-col bg-[#1e1e1e] border-t border-black/40 relative flex-shrink-0" style={{ height: 220 }}>
       {showConnect && <SSHConnectModal onConnect={handleConnect} onClose={() => setShowConnect(false)} />}
-
-      {/* Panel header */}
       <div className="flex items-center justify-between px-3 h-8 bg-[#252526] border-b border-black/30 flex-shrink-0">
         <div className="flex gap-3 items-center">
           <span className="text-[11px] text-white font-medium">TERMINAL</span>
@@ -385,7 +291,7 @@ function TerminalPanel({ onClose, activeFile }) {
             <div className="flex items-center gap-1.5 text-[10px] text-green-400 bg-green-500/10 px-2 py-0.5 rounded">
               <Wifi className="w-3 h-3" />
               {connection.username}@{connection.host}:{connection.port}
-              <button onClick={() => { setConnection(null); addLine('system', 'Disconnected.'); }} className="ml-1 text-green-600 hover:text-red-400 transition-colors">
+              <button onClick={() => { setConnection(null); addLine('system', 'Disconnected.'); }} className="ml-1 text-green-600 hover:text-red-400">
                 <X className="w-2.5 h-2.5" />
               </button>
             </div>
@@ -404,12 +310,7 @@ function TerminalPanel({ onClose, activeFile }) {
           </button>
         </div>
       </div>
-
-      {/* Output */}
-      <div
-        className="flex-1 overflow-y-auto p-2 font-mono text-xs leading-5 cursor-text"
-        onClick={() => inputRef.current?.focus()}
-      >
+      <div className="flex-1 overflow-y-auto p-2 font-mono text-xs leading-5 cursor-text" onClick={() => inputRef.current?.focus()}>
         {lines.map((line, i) => (
           <div key={i} className={`whitespace-pre-wrap break-all ${
             line.type === 'system' ? 'text-blue-400' :
@@ -443,26 +344,29 @@ function TerminalPanel({ onClose, activeFile }) {
 // ─── Main Editor ──────────────────────────────────────────────────────────────
 
 export default function CodeEditor() {
-  const [files, setFiles] = useState(loadFiles);
-  const [activeId, setActiveId] = useState(() => {
-    const saved = localStorage.getItem(ACTIVE_KEY);
-    return saved || loadFiles()[0]?.id || '1';
-  });
+  const [files,   setFiles]   = useState(loadFiles);
+  const [folders, setFolders] = useState(loadFolders);
+  const [activeId, setActiveId] = useState(() => localStorage.getItem(ACTIVE_KEY) || loadFiles()[0]?.id || '1');
   const [activePanel, setActivePanel] = useState('explorer');
   const [showTerminal, setShowTerminal] = useState(true);
   const [cursor, setCursor] = useState({ line: 1, col: 1 });
   const [copied, setCopied] = useState(false);
   const [fontSize, setFontSize] = useState(13);
-  const [newFileName, setNewFileName] = useState('');
-  const [showNewFile, setShowNewFile] = useState(false);
   const [savedIndicator, setSavedIndicator] = useState(false);
-  const textareaRef = useRef(null);
+  // New file
+  const [newFileName, setNewFileName]   = useState('');
+  const [showNewFile, setShowNewFile]   = useState(false);
+  // New folder
+  const [newFolderName, setNewFolderName]   = useState('');
+  const [showNewFolder, setShowNewFolder]   = useState(false);
 
+  const textareaRef = useRef(null);
   const activeFile = files.find(f => f.id === activeId) || files[0];
 
-  // Auto-save on every change
   useEffect(() => { saveFiles(files); }, [files]);
+  useEffect(() => { saveFolders(folders); }, [folders]);
   useEffect(() => { localStorage.setItem(ACTIVE_KEY, activeId); }, [activeId]);
+
   // Global keyboard shortcuts
   useEffect(() => {
     const handler = (e) => {
@@ -470,26 +374,25 @@ export default function CodeEditor() {
       if ((e.ctrlKey || e.metaKey) && e.key === 'b') { e.preventDefault(); setActivePanel(p => p ? null : 'explorer'); }
       if ((e.ctrlKey || e.metaKey) && e.key === '`') { e.preventDefault(); setShowTerminal(p => !p); }
       if ((e.ctrlKey || e.metaKey) && e.key === 'n') { e.preventDefault(); setShowNewFile(true); }
-      if (e.key === 'F5') { e.preventDefault(); handleRun(); }
+      if (e.key === 'F5') { e.preventDefault(); setShowTerminal(true); }
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [files, activeId]);
+  }, []);
 
+  // ── File operations ──
   const handleSave = () => {
     saveFiles(files);
     setSavedIndicator(true);
     setTimeout(() => setSavedIndicator(false), 1500);
   };
 
-  const updateContent = (content) => {
-    setFiles(prev => prev.map(f => f.id === activeId ? { ...f, content } : f));
-  };
+  const updateContent = (content) => setFiles(prev => prev.map(f => f.id === activeId ? { ...f, content } : f));
 
   const updateLanguage = (language) => {
     const ext = langExtensions[language] || 'txt';
-    const baseName = activeFile.name.replace(/\.[^.]+$/, '');
-    setFiles(prev => prev.map(f => f.id === activeId ? { ...f, language, name: `${baseName}.${ext}` } : f));
+    const base = activeFile.name.replace(/\.[^.]+$/, '');
+    setFiles(prev => prev.map(f => f.id === activeId ? { ...f, language, name: `${base}.${ext}` } : f));
   };
 
   const addFile = () => {
@@ -498,7 +401,7 @@ export default function CodeEditor() {
     const ext = name.split('.').pop().toLowerCase();
     const langMap = Object.entries(langExtensions).find(([, v]) => v === ext);
     const language = langMap ? langMap[0] : 'javascript';
-    const newFile = { id: Date.now().toString(), name, language, content: '' };
+    const newFile = { id: Date.now().toString(), name, language, folder_id: null, content: '' };
     setFiles(prev => [...prev, newFile]);
     setActiveId(newFile.id);
     setNewFileName('');
@@ -506,7 +409,7 @@ export default function CodeEditor() {
   };
 
   const deleteFile = (id) => {
-    if (files.length === 1) { termLog('Cannot close the last file.', 'error'); return; }
+    if (files.length === 1) return;
     const remaining = files.filter(f => f.id !== id);
     setFiles(remaining);
     if (activeId === id) setActiveId(remaining[0].id);
@@ -517,38 +420,48 @@ export default function CodeEditor() {
     const blob = new Blob([f.content], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
-    a.href = url;
-    a.download = f.name;
-    a.click();
+    a.href = url; a.download = f.name; a.click();
     URL.revokeObjectURL(url);
-    termLog(`Downloaded ${f.name}`, 'success');
   };
 
-  const handleRun = () => {
-    setShowTerminal(true);
+  // ── Folder operations ──
+  const addFolder = () => {
+    if (!newFolderName.trim()) return;
+    const newFolder = { id: 'f_' + Date.now(), name: newFolderName.trim(), expanded: true };
+    setFolders(prev => [...prev, newFolder]);
+    setNewFolderName('');
+    setShowNewFolder(false);
   };
 
+  const deleteFolder = (folderId) => {
+    setFolders(prev => prev.filter(f => f.id !== folderId));
+    // Move files in deleted folder to root
+    setFiles(prev => prev.map(f => f.folder_id === folderId ? { ...f, folder_id: null } : f));
+  };
+
+  const toggleFolder = (folderId) => {
+    setFolders(prev => prev.map(f => f.id === folderId ? { ...f, expanded: !f.expanded } : f));
+  };
+
+  // ── Menu actions ──
   const handleMenuAction = (action) => {
     switch (action) {
-      case 'new-file': setShowNewFile(true); break;
-      case 'save': handleSave(); break;
-      case 'save-all': saveFiles(files); setSavedIndicator(true); setTimeout(() => setSavedIndicator(false), 1500); break;
-      case 'download': downloadFile(); break;
-      case 'download-all': files.forEach(f => downloadFile(f)); break;
-      case 'close-file': deleteFile(activeId); break;
-      case 'exit': window.location.href = createPageUrl('CodeHub'); break;
-      case 'copy-all': navigator.clipboard.writeText(activeFile?.content || ''); setCopied(true); setTimeout(() => setCopied(false), 1500); break;
-      case 'select-all': textareaRef.current?.select(); break;
-      case 'toggle-sidebar': setActivePanel(p => p ? null : 'explorer'); break;
-      case 'toggle-terminal': setShowTerminal(p => !p); break;
-      case 'zoom-in': setFontSize(s => Math.min(s + 1, 22)); break;
-      case 'zoom-out': setFontSize(s => Math.max(s - 1, 10)); break;
-      case 'zoom-reset': setFontSize(13); break;
-      case 'run': handleRun(); break;
-      case 'run-terminal': setShowTerminal(true); handleRun(); break;
-      case 'stop': break;
-      case 'clear-terminal': break;
-      case 'copy-terminal': break;
+      case 'new-file':      setShowNewFile(true); break;
+      case 'new-folder':    setShowNewFolder(true); break;
+      case 'save':          handleSave(); break;
+      case 'save-all':      saveFiles(files); setSavedIndicator(true); setTimeout(() => setSavedIndicator(false), 1500); break;
+      case 'download':      downloadFile(); break;
+      case 'download-all':  files.forEach(f => downloadFile(f)); break;
+      case 'close-file':    deleteFile(activeId); break;
+      case 'exit':          window.location.href = createPageUrl('CodeHub'); break;
+      case 'copy-all':      navigator.clipboard.writeText(activeFile?.content || ''); setCopied(true); setTimeout(() => setCopied(false), 1500); break;
+      case 'select-all':    textareaRef.current?.select(); break;
+      case 'toggle-sidebar':setActivePanel(p => p ? null : 'explorer'); break;
+      case 'toggle-terminal':setShowTerminal(p => !p); break;
+      case 'zoom-in':       setFontSize(s => Math.min(s + 1, 22)); break;
+      case 'zoom-out':      setFontSize(s => Math.max(s - 1, 10)); break;
+      case 'zoom-reset':    setFontSize(13); break;
+      case 'run':           setShowTerminal(true); break;
       default: break;
     }
   };
@@ -566,8 +479,7 @@ export default function CodeEditor() {
   };
 
   const handleCursorMove = (e) => {
-    const ta = e.target;
-    const text = ta.value.substring(0, ta.selectionStart);
+    const text = e.target.value.substring(0, e.target.selectionStart);
     const lines = text.split('\n');
     setCursor({ line: lines.length, col: lines[lines.length - 1].length + 1 });
   };
@@ -577,11 +489,11 @@ export default function CodeEditor() {
   return (
     <div className="h-screen flex flex-col bg-[#1e1e1e] text-white overflow-hidden" style={{ fontFamily: 'system-ui, sans-serif' }}>
 
-      {/* ── Title Bar ── */}
+      {/* Title Bar */}
       <div className="flex items-center gap-2 px-4 h-8 bg-[#323233] border-b border-black/30 flex-shrink-0 select-none">
         <div className="flex gap-1.5 mr-3">
           <Link to={createPageUrl('CodeHub')}>
-            <span className="w-3 h-3 rounded-full bg-[#ff5f57] inline-block cursor-pointer hover:opacity-80 transition-opacity" title="Exit to Code Hub" />
+            <span className="w-3 h-3 rounded-full bg-[#ff5f57] inline-block cursor-pointer hover:opacity-80" title="Exit" />
           </Link>
           <span className="w-3 h-3 rounded-full bg-[#febc2e] inline-block" />
           <span className="w-3 h-3 rounded-full bg-[#28c840] inline-block" />
@@ -595,7 +507,7 @@ export default function CodeEditor() {
           <button onClick={() => handleMenuAction('copy-all')} title="Copy All" className="p-1 text-gray-500 hover:text-white rounded transition-colors">
             {copied ? <Check className="w-3.5 h-3.5 text-green-400" /> : <Copy className="w-3.5 h-3.5" />}
           </button>
-          <button onClick={handleRun} title="Run (F5)" className="p-1 text-gray-500 hover:text-green-400 rounded transition-colors">
+          <button onClick={() => setShowTerminal(true)} title="Run (F5)" className="p-1 text-gray-500 hover:text-green-400 rounded transition-colors">
             <Play className="w-3.5 h-3.5" />
           </button>
           <button onClick={handleSave} title="Save (Ctrl+S)" className="p-1 text-gray-500 hover:text-blue-400 rounded transition-colors">
@@ -607,10 +519,10 @@ export default function CodeEditor() {
         </div>
       </div>
 
-      {/* ── Menu Bar ── */}
-      <MenuBar onAction={handleMenuAction} activeFile={activeFile} files={files} />
+      {/* Menu Bar */}
+      <MenuBar onAction={handleMenuAction} activeFile={activeFile} />
 
-      {/* ── Body (Activity + Sidebar + Editor + Terminal) ── */}
+      {/* Body */}
       <div className="flex flex-1 overflow-hidden">
 
         {/* Activity Bar */}
@@ -620,29 +532,52 @@ export default function CodeEditor() {
         {activePanel === 'explorer' && (
           <ExplorerPanel
             files={files}
+            folders={folders}
             activeId={activeId}
             onSelect={setActiveId}
             onDelete={deleteFile}
             onNew={() => setShowNewFile(true)}
+            onNewFolder={() => setShowNewFolder(true)}
             showNewFile={showNewFile}
             newFileName={newFileName}
             setNewFileName={setNewFileName}
             onAddFile={addFile}
             setShowNewFile={setShowNewFile}
+            showNewFolder={showNewFolder}
+            newFolderName={newFolderName}
+            setNewFolderName={setNewFolderName}
+            onAddFolder={addFolder}
+            setShowNewFolder={setShowNewFolder}
+            onToggleFolder={toggleFolder}
+            onDeleteFolder={deleteFolder}
           />
         )}
+
+        {/* Search Panel */}
         {activePanel === 'search' && (
           <div className="w-56 bg-[#252526] border-r border-black/30 flex flex-col flex-shrink-0 p-3">
             <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Search</span>
             <input placeholder="Search in files..." className="w-full bg-[#3c3c3c] border border-[#555] text-white text-xs px-2 py-1 rounded outline-none" />
           </div>
         )}
+
+        {/* AI Plugins Panel */}
+        {activePanel === 'plugins' && (
+          <EditorPluginsPanel
+            activeFile={activeFile}
+            onInsert={(code) => updateContent(code)}
+          />
+        )}
+
+        {/* Git Panel */}
         {activePanel === 'git' && (
           <div className="w-56 bg-[#252526] border-r border-black/30 flex flex-col flex-shrink-0 p-3">
             <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Source Control</span>
             <span className="text-gray-500 text-xs">No git repository detected.</span>
           </div>
         )}
+
+        {/* Settings Panel */}
         {activePanel === 'settings' && (
           <div className="w-56 bg-[#252526] border-r border-black/30 flex flex-col flex-shrink-0 p-3 gap-3">
             <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Settings</span>
@@ -680,20 +615,13 @@ export default function CodeEditor() {
                 <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: langColors[f.language] || '#6b7280' }} />
                 <span>{f.name}</span>
                 {files.length > 1 && (
-                  <button
-                    onClick={e => { e.stopPropagation(); deleteFile(f.id); }}
-                    className="opacity-0 group-hover:opacity-100 ml-1 text-gray-500 hover:text-red-400 transition-all"
-                  >
+                  <button onClick={e => { e.stopPropagation(); deleteFile(f.id); }} className="opacity-0 group-hover:opacity-100 ml-1 text-gray-500 hover:text-red-400 transition-all">
                     <X className="w-3 h-3" />
                   </button>
                 )}
               </div>
             ))}
-            <button
-              onClick={() => setShowNewFile(true)}
-              className="px-3 py-2 text-gray-600 hover:text-gray-300 transition-colors flex-shrink-0"
-              title="New file (Ctrl+N)"
-            >
+            <button onClick={() => setShowNewFile(true)} className="px-3 py-2 text-gray-600 hover:text-gray-300 transition-colors flex-shrink-0" title="New file">
               <Plus className="w-3.5 h-3.5" />
             </button>
           </div>
@@ -709,7 +637,6 @@ export default function CodeEditor() {
                 <div key={i + 1} className={cursor.line === i + 1 ? 'text-gray-300' : ''}>{i + 1}</div>
               ))}
             </div>
-
             {/* Textarea */}
             <textarea
               ref={textareaRef}
@@ -731,24 +658,18 @@ export default function CodeEditor() {
 
           {/* Terminal */}
           {showTerminal && (
-            <TerminalPanel
-              activeFile={activeFile}
-              onClose={() => setShowTerminal(false)}
-            />
+            <TerminalPanel activeFile={activeFile} onClose={() => setShowTerminal(false)} />
           )}
         </div>
       </div>
 
-      {/* ── Status Bar ── */}
+      {/* Status Bar */}
       <div className="flex items-center gap-4 px-3 h-6 bg-[#007acc] text-white text-[11px] flex-shrink-0 select-none">
         <Link to={createPageUrl('CodeHub')} className="flex items-center gap-1.5 hover:bg-[#1177bb] px-2 h-full transition-colors">
-          <ArrowLeft className="w-3 h-3" />
-          Code Hub
+          <ArrowLeft className="w-3 h-3" /> Code Hub
         </Link>
         <span className="opacity-50">|</span>
-        <span className="flex items-center gap-1">
-          <GitBranch className="w-3 h-3" /> main
-        </span>
+        <span className="flex items-center gap-1"><GitBranch className="w-3 h-3" /> main</span>
         <span className="opacity-50">|</span>
         <select
           value={activeFile?.language || 'python'}
@@ -756,17 +677,13 @@ export default function CodeEditor() {
           className="bg-transparent text-white text-[11px] outline-none cursor-pointer"
           style={{ fontFamily: 'inherit' }}
         >
-          {LANGUAGES.map(l => (
-            <option key={l} value={l} className="bg-[#252526] text-white capitalize">{l}</option>
-          ))}
+          {LANGUAGES.map(l => <option key={l} value={l} className="bg-[#252526] text-white capitalize">{l}</option>)}
         </select>
         <span className="ml-auto">Ln {cursor.line}, Col {cursor.col}</span>
         <span className="opacity-70">UTF-8</span>
         <span className="opacity-70">{files.length} file{files.length !== 1 ? 's' : ''}</span>
-        <button
-          onClick={() => setShowTerminal(p => !p)}
-          className="flex items-center gap-1 hover:bg-[#1177bb] px-2 h-full transition-colors"
-        >
+        <span className="opacity-70">{folders.length} folder{folders.length !== 1 ? 's' : ''}</span>
+        <button onClick={() => setShowTerminal(p => !p)} className="flex items-center gap-1 hover:bg-[#1177bb] px-2 h-full transition-colors">
           <TerminalIcon className="w-3 h-3" />
         </button>
       </div>
