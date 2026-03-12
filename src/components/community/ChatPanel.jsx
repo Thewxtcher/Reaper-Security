@@ -9,14 +9,16 @@ import {
 import { Button } from '@/components/ui/button';
 import TypingIndicator, { useTyping } from './TypingIndicator';
 import MediaPicker from './MediaPicker';
+import ModerationTools from './ModerationTools';
 
 const EMOJIS = ['👍', '❤️', '😂', '😮', '😢', '🔥', '💯', '🎉'];
 
-function MessageBubble({ msg, user, onReply, onDelete, onEdit, onReact, onPin, prevMsg }) {
+function MessageBubble({ msg, user, onReply, onDelete, onEdit, onReact, onPin, prevMsg, memberRole, server }) {
   const [hovering, setHovering] = useState(false);
   const [editing, setEditing] = useState(false);
   const [editContent, setEditContent] = useState(msg.content);
   const [showEmoji, setShowEmoji] = useState(false);
+  const [showModTools, setShowModTools] = useState(false);
 
   const isOwn = msg.author_email === user?.email;
   const isSameAuthor = prevMsg?.author_email === msg.author_email;
@@ -190,6 +192,23 @@ function MessageBubble({ msg, user, onReply, onDelete, onEdit, onReact, onPin, p
                 </button>
               </>
             )}
+            <div className="relative">
+              <button
+                onClick={() => setShowModTools(!showModTools)}
+                className="p-1.5 text-gray-400 hover:text-red-400 rounded transition-colors"
+                title="More options"
+              >
+                <ChevronDown className="w-4 h-4" />
+              </button>
+              {showModTools && (
+                <ModerationTools
+                  message={msg}
+                  user={user}
+                  memberRole={memberRole}
+                  onClose={() => setShowModTools(false)}
+                />
+              )}
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
