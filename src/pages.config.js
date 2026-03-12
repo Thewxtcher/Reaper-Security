@@ -73,6 +73,7 @@ import Upgrades from './pages/Upgrades';
 import UserProfile from './pages/UserProfile';
 import ServiceProviderApply from './pages/ServiceProviderApply';
 import Home from './pages/Home';
+import CommunityHub from './pages/CommunityHub';
 import __Layout from './Layout.jsx';
 
 
@@ -103,6 +104,7 @@ export const PAGES = {
     "UserProfile": UserProfile,
     "ServiceProviderApply": ServiceProviderApply,
     "Home": Home,
+    "CommunityHub": CommunityHub,
 }
 
 export const pagesConfig = {
