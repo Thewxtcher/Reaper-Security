@@ -25,6 +25,7 @@ import MemberProfilePopup from '../components/community/MemberProfilePopup';
 import PushNotifications from '../components/PushNotifications';
 
 // view modes: 'server' | 'dm' | 'friends'
+
 export default function Community() {
   const urlParams = new URLSearchParams(window.location.search);
   const initialView = urlParams.get('view') === 'dm' ? 'dm' : 'server';
