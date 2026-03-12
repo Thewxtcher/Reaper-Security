@@ -58,6 +58,12 @@ const NAV_SECTIONS = [
       { name: 'Apply as Provider', icon: Briefcase, page: 'ServiceProviderApply' },
     ]
   },
+  {
+    label: 'LEGAL',
+    items: [
+      { name: 'Legal & Terms', icon: Scale, page: 'Legal' },
+    ]
+  },
 ];
 
 // Bottom nav items for mobile (most used)
