@@ -13,7 +13,9 @@ import AdminModerators from '../components/admin/AdminModerators';
 import AdminPlugins from '../components/admin/AdminPlugins';
 import AdminServers from '../components/admin/AdminServers';
 
-const OWNER_EMAIL = 'reaperappofficial@gmail.com';
+// NOTE: Owner email is intentionally NOT hardcoded here to avoid exposing it
+// in the JS bundle. Role-based access uses server-side role='admin' check only.
+// The Layout.js still uses it only for UI decoration (admin badge) — acceptable.
 
 const NAV_ITEMS = [
   { id: 'overview', label: 'Overview', icon: Home },
