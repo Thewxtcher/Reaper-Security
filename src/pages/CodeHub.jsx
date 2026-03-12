@@ -6,7 +6,8 @@ import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
 import {
   Code, Search, Star, Download, FolderOpen, User, Terminal,
-  LogIn, Folder, GitFork, GitBranch, Plus, Clock, TrendingUp, Box
+  LogIn, Folder, GitFork, GitBranch, Plus, Clock, TrendingUp, Box,
+  Skull, Lock, ShieldAlert, Zap, Eye, AlertTriangle
 } from 'lucide-react';
 import CodeFoldersPanel from '../components/codehub/CodeFoldersPanel';
 import { Button } from '@/components/ui/button';
