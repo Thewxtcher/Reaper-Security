@@ -117,15 +117,17 @@ export default function FindFriendsPanel({ user, onStartDM }) {
   });
 
   const accepted = friendships.filter(f => f.status === 'accepted');
-  const pending = friendships.filter(f => f.status === 'pending');
-  const filtered = (tab === 'pending' ? pending : accepted).filter(f => {
+  const incoming = friendships.filter(f => f.status === 'pending' && f.receiver_email === user.email);
+  const outgoing = friendships.filter(f => f.status === 'pending' && f.requester_email === user.email);
+  const filtered = (tab === 'pending' ? incoming : tab === 'sent' ? outgoing : accepted).filter(f => {
     const name = f.requester_email === user.email ? f.receiver_name : f.requester_name;
     return !search || name?.toLowerCase().includes(search.toLowerCase());
   });
 
   const tabs = [
     { id: 'all', label: 'All Friends', count: accepted.length },
-    { id: 'pending', label: 'Pending', count: pending.length },
+    { id: 'pending', label: 'Incoming', count: incoming.length },
+    { id: 'sent', label: 'Sent', count: outgoing.length },
     { id: 'add', label: 'Add Friend' },
   ];
 
