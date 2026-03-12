@@ -223,6 +223,100 @@ export default function CodeHub() {
           )
         )}
 
+        {/* Extreme Tools view */}
+        {activeTab === 'extreme' && (
+          <div className="space-y-6">
+            {/* Warning Banner */}
+            <div className="bg-red-500/5 border border-red-500/30 rounded-xl p-5 flex gap-4">
+              <AlertTriangle className="w-6 h-6 text-red-500 flex-shrink-0 mt-0.5" />
+              <div>
+                <div className="text-red-400 font-bold text-sm mb-1 font-mono tracking-wide">⚠ RESTRICTED ACCESS — AUTHORIZED PROFESSIONALS ONLY</div>
+                <p className="text-gray-400 text-xs leading-relaxed">
+                  This section contains advanced offensive security tools intended <strong className="text-white">exclusively</strong> for licensed penetration testers, 
+                  red team operators, and security researchers operating under authorized engagements. Unauthorized use of these tools 
+                  is a federal crime under the CFAA (18 U.S.C. § 1030) and equivalent international laws. 
+                  By accessing this section you accept full legal responsibility for your actions.
+                </p>
+              </div>
+            </div>
+
+            {/* Premium Gate */}
+            <div className="bg-[#111]/80 border border-white/5 rounded-xl overflow-hidden">
+              {/* Header */}
+              <div className="relative px-6 py-8 text-center overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-red-900/20 via-transparent to-purple-900/10 pointer-events-none" />
+                <div className="relative">
+                  <div className="w-16 h-16 rounded-2xl bg-red-500/10 border border-red-500/30 flex items-center justify-center mx-auto mb-4">
+                    <Skull className="w-8 h-8 text-red-500" />
+                  </div>
+                  <h2 className="text-2xl font-bold text-white mb-2">Black Arsenal</h2>
+                  <p className="text-gray-400 text-sm max-w-md mx-auto">
+                    Premium offensive security tools, zero-day research frameworks, advanced exploitation kits, and real-world attack simulations — reserved for verified security professionals.
+                  </p>
+                  <div className="mt-4 inline-flex items-center gap-2 bg-yellow-500/10 border border-yellow-500/20 text-yellow-400 text-xs px-4 py-2 rounded-full font-mono">
+                    <Lock className="w-3.5 h-3.5" />
+                    PREMIUM SUBSCRIPTION REQUIRED
+                  </div>
+                </div>
+              </div>
+
+              {/* Feature grid */}
+              <div className="grid sm:grid-cols-3 gap-px bg-white/5 border-t border-white/5">
+                {[
+                  { icon: Zap, label: 'Advanced Exploits', desc: 'Cutting-edge CVE exploits, PoCs, and weaponized payloads for authorized testing' },
+                  { icon: Eye, label: 'OSINT Frameworks', desc: 'Deep reconnaissance tools, HUMINT modules, and passive intel collection suites' },
+                  { icon: ShieldAlert, label: 'Red Team Kits', desc: 'Full adversary simulation toolkits, C2 frameworks, and lateral movement utilities' },
+                ].map(f => (
+                  <div key={f.label} className="bg-[#0d0d0d] p-5">
+                    <f.icon className="w-5 h-5 text-red-400 mb-3" />
+                    <div className="text-white font-semibold text-sm mb-1">{f.label}</div>
+                    <p className="text-gray-600 text-xs leading-relaxed">{f.desc}</p>
+                  </div>
+                ))}
+              </div>
+
+              {/* CTA */}
+              <div className="px-6 py-6 border-t border-white/5 flex flex-col sm:flex-row items-center gap-4 justify-between">
+                <div>
+                  <div className="text-white font-semibold text-sm">Unlock the Black Arsenal</div>
+                  <div className="text-gray-500 text-xs mt-0.5">Premium membership — coming soon. Join the waitlist.</div>
+                </div>
+                <button
+                  disabled
+                  className="px-6 py-2.5 bg-red-600/50 text-red-300 rounded-lg text-sm font-semibold flex items-center gap-2 cursor-not-allowed border border-red-500/20"
+                >
+                  <Lock className="w-4 h-4" />
+                  Coming Soon
+                </button>
+              </div>
+            </div>
+
+            {/* What's included list */}
+            <div className="bg-[#111]/60 border border-white/5 rounded-xl p-5">
+              <div className="text-[10px] font-bold text-gray-600 tracking-widest uppercase mb-4">What Premium Includes</div>
+              <div className="grid sm:grid-cols-2 gap-3">
+                {[
+                  'Advanced CVE exploitation modules',
+                  'Custom C2 framework templates',
+                  'Active Directory attack chains',
+                  'Cloud infrastructure attack tools',
+                  'Mobile app penetration kits',
+                  'Hardware hacking firmware tools',
+                  'Social engineering automation scripts',
+                  'Full-spectrum network intrusion suites',
+                  'Malware analysis & reverse engineering labs',
+                  'Private community of elite practitioners',
+                ].map(item => (
+                  <div key={item} className="flex items-center gap-2.5 text-xs text-gray-400">
+                    <span className="w-1.5 h-1.5 rounded-full bg-red-500/60 flex-shrink-0" />
+                    {item}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Browse view */}
         {activeTab === 'browse' && (
           <div className="flex gap-6">
