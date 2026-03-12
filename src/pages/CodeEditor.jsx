@@ -37,7 +37,6 @@ const langColors = {
 
 const STORAGE_KEY = 'reaper_editor_files_v2';
 const ACTIVE_KEY = 'reaper_editor_active_v2';
-const TERMINAL_KEY = 'reaper_editor_terminal';
 
 const defaultFiles = [
   { id: '1', name: 'main.py', language: 'python', content: '# Welcome to Reaper Code Editor\n# A powerful VS Code-style editor in your browser\n\ndef greet(name):\n    return f"Hello, {name}!"\n\nprint(greet("World"))\n' },
