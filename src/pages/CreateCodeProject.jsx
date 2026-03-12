@@ -92,6 +92,30 @@ export default function CreateCodeProject() {
     }
   };
 
+  const langExtMap = {
+    python:'py', javascript:'js', typescript:'ts', jsx:'jsx', tsx:'tsx', bash:'sh',
+    powershell:'ps1', ruby:'rb', go:'go', rust:'rs', c:'c', cpp:'cpp', csharp:'cs',
+    java:'java', kotlin:'kt', swift:'swift', php:'php', perl:'pl', lua:'lua', r:'r',
+    scala:'scala', haskell:'hs', elixir:'ex', dart:'dart', groovy:'groovy', sql:'sql',
+    html:'html', css:'css', scss:'scss', json:'json', yaml:'yml', xml:'xml',
+    markdown:'md', assembly:'asm', dockerfile:'Dockerfile', terraform:'tf',
+  };
+
+  const handleDownloadDraft = () => {
+    if (!formData.code.trim()) return;
+    const ext = langExtMap[formData.language] || 'txt';
+    const name = formData.name.trim() ? `${formData.name.replace(/\s+/g, '_')}.${ext}` : `draft.${ext}`;
+    const blob = new Blob([formData.code], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = name;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="min-h-screen py-20">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
