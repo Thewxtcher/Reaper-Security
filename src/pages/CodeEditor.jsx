@@ -464,8 +464,6 @@ export default function CodeEditor() {
   const [fontSize, setFontSize] = useState(13);
   const [newFileName, setNewFileName] = useState('');
   const [showNewFile, setShowNewFile] = useState(false);
-  const [terminalHistory, setTerminalHistory] = useState(loadTerminalHistory);
-  const [terminalInput, setTerminalInput] = useState('');
   const [savedIndicator, setSavedIndicator] = useState(false);
   const textareaRef = useRef(null);
 
