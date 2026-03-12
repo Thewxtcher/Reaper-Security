@@ -374,6 +374,7 @@ export default function Layout({ children, currentPageName }) {
   if (isCommunity) {
     return (
       <div className="min-h-screen text-white" style={{ backgroundColor: bg, color: text }}>
+        {showBoot && <BootSequence onComplete={handleBootComplete} />}
         <SoundSystem />
         <style>{themeStyles}</style>
         {children}
