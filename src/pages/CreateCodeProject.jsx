@@ -29,7 +29,10 @@ const categories = [
 ];
 
 const languages = [
-  'python', 'javascript', 'bash', 'powershell', 'ruby', 'go', 'rust', 'c', 'cpp', 'java'
+  'python', 'javascript', 'typescript', 'jsx', 'tsx', 'bash', 'powershell', 'ruby', 'go',
+  'rust', 'c', 'cpp', 'csharp', 'java', 'kotlin', 'swift', 'php', 'perl', 'lua', 'r',
+  'scala', 'haskell', 'elixir', 'dart', 'groovy', 'sql', 'html', 'css', 'scss', 'json',
+  'yaml', 'xml', 'markdown', 'assembly', 'vba', 'matlab', 'dockerfile', 'terraform',
 ];
 
 export default function CreateCodeProject() {
