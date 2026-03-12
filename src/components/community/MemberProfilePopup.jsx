@@ -38,9 +38,9 @@ export default function MemberProfilePopup({ member, onClose, onStartDM, current
   const RoleIcon = ROLE_ICONS[member.role];
   const isOwnProfile = member.user_email === currentUserEmail;
 
-  return (
+  return createPortal(
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={onClose}>
+      <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4" onClick={onClose}>
         <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
         <motion.div
           initial={{ opacity: 0, scale: 0.9, y: 10 }}
