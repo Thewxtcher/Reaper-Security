@@ -69,7 +69,8 @@ export default function AdminDashboard() {
     </div>
   );
 
-  const isOwner = user?.email === OWNER_EMAIL;
+  // Owner = admin role set server-side. No email comparison needed in bundle.
+  const isOwner = user?.role === 'admin';
 
   return (
     <div className="min-h-screen flex bg-[#0a0a0a]">
