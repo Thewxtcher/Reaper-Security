@@ -383,10 +383,11 @@ export default function Community() {
         <MemberProfilePopup
           member={selectedMember}
           onClose={() => setSelectedMember(null)}
-          onStartDM={(email, name) => { handleStartDM(email, name); }}
+          onStartDM={(email, name) => { handleStartDM(email, name); setSelectedMember(null); }}
           currentUserEmail={user?.email}
         />
       )}
     </div>
   );
+}
 }
