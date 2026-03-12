@@ -9,6 +9,11 @@ import {
   Trophy, Zap, BookOpen, Settings, LogOut, Camera, BarChart2,
   Github, Twitter, Linkedin, Globe, Upload, Link2
 } from 'lucide-react';
+import AchievementsWall from '../components/gamification/AchievementsWall';
+import ProgressChart from '../components/gamification/ProgressChart';
+import LevelTitle from '../components/gamification/LevelTitle';
+import SkillTree from '../components/gamification/SkillTree';
+import StreakTracker from '../components/gamification/StreakTracker';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -67,7 +72,7 @@ export default function Profile() {
 
   const { data: mySolves = [] } = useQuery({
     queryKey: ['mySolves', user?.email],
-    queryFn: () => base44.entities.LabSubmission.filter({ user_email: user.email, is_correct: true }),
+    queryFn: () => base44.entities.LabSubmission.filter({ user_email: user.email }),
     enabled: !!user?.email,
   });
 
@@ -182,6 +187,7 @@ export default function Profile() {
                     <span className="text-xs text-gray-500 flex items-center gap-1">
                       <Zap className="w-3 h-3 text-yellow-400" />{xp} XP
                     </span>
+                    <LevelTitle xp={xp} size="xs" />
                     {skill?.looking_to_collaborate && (
                       <span className="text-xs px-2 py-0.5 rounded-full bg-green-500/20 text-green-400">Open to Collaborate</span>
                     )}
@@ -221,6 +227,11 @@ export default function Profile() {
           </Card>
         </motion.div>
 
+        {/* Streak Tracker */}
+        <div className="mb-6">
+          <StreakTracker isAuth={isAuthenticated} userXP={xp} />
+        </div>
+
         <div className="grid md:grid-cols-3 gap-6">
           {/* Left column */}
           <div className="space-y-4">
@@ -243,6 +254,8 @@ export default function Profile() {
                 ))}
               </CardContent>
             </Card>
+
+            {skill && <SkillTree currentXP={skill?.xp || 0} />}
 
             <Card className="bg-[#111] border border-white/10">
               <CardHeader className="pb-3"><CardTitle className="text-white text-sm">Skills</CardTitle></CardHeader>
@@ -354,6 +367,15 @@ export default function Profile() {
                 </CardContent>
               </Card>
             ) : null}
+
+            {/* Progress Chart + Achievements */}
+            <ProgressChart solves={mySolves} />
+            <AchievementsWall
+              skill={skill}
+              solvesCount={mySolves.filter(s => s.is_correct).length}
+              postsCount={myPosts.length}
+              projectsCount={myProjects.length}
+            />
 
             {/* Recent Posts */}
             <Card className="bg-[#111] border border-white/10">
