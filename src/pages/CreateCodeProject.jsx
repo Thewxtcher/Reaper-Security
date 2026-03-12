@@ -235,7 +235,7 @@ export default function CreateCodeProject() {
                   />
                 </div>
 
-                <div className="flex gap-4">
+                <div className="flex flex-wrap gap-3">
                   <Button
                     type="submit"
                     disabled={!formData.name.trim() || !formData.code.trim() || createProjectMutation.isPending}
@@ -243,6 +243,16 @@ export default function CreateCodeProject() {
                   >
                     <Send className="w-4 h-4 mr-2" />
                     {createProjectMutation.isPending ? 'Creating...' : 'Share Project'}
+                  </Button>
+                  <Button
+                    type="button"
+                    onClick={handleDownloadDraft}
+                    disabled={!formData.code.trim()}
+                    variant="outline"
+                    className="border-green-500/30 text-green-400 hover:border-green-500/60 hover:bg-green-500/10"
+                  >
+                    <Download className="w-4 h-4 mr-2" />
+                    Download Draft
                   </Button>
                   <Link to={createPageUrl('CodeHub')}>
                     <Button type="button" variant="outline" className="border-gray-700 text-gray-300">
