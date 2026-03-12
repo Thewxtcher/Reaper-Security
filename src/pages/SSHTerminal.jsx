@@ -142,6 +142,12 @@ function TerminalPane({ user }) {
       return;
     }
 
+    // Client-side warning (backend enforces real blocks independently)
+    const warning = getCommandWarning(trimmed);
+    if (warning) {
+      addLine('system', `⚠ Warning: This command involves ${warning}. Sending to server...`);
+    }
+
     setIsRunning(true);
     try {
       const res = await base44.functions.invoke('sshProxy', {
