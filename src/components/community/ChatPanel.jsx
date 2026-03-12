@@ -463,7 +463,7 @@ export default function ChatPanel({ channel, server, user }) {
             onKeyDown={e => {
               if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); }
             }}
-            placeholder={uploading ? 'Uploading...' : `Message #${channel.name}${isCode ? ' (code mode)' : ''}`}
+            placeholder={uploading ? 'Uploading...' : `Message #${channel.name}${isCode ? ' (code mode)' : ''} (@username for mentions)`}
             className={`flex-1 bg-transparent text-white text-sm placeholder:text-gray-600 focus:outline-none resize-none leading-6 max-h-40 ${isCode ? 'font-mono' : ''}`}
             rows={1}
             style={{ height: 'auto', minHeight: '24px' }}
