@@ -222,18 +222,15 @@ export default function CyberLabs() {
 
   return (
     <div className="min-h-screen py-20">
+      <XPLevelUpToast
+        {...xpToast}
+        onDone={() => setXpToast(t => ({ ...t, show: false }))}
+      />
+
       {/* Header */}
       <section className="py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-10">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-red-500/10 border border-red-500/20 rounded-full text-red-400 text-sm mb-6">
-              <FlaskConical className="w-4 h-4" /> Live Cyber Labs
-            </div>
-            <h1 className="text-5xl font-bold font-serif text-white mb-4">Cyber Challenge Arena</h1>
-            <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-              Solve real-world security challenges. Earn XP. Climb tiers. Build a verified skill profile.
-            </p>
-          </motion.div>
+          <HackerTerminal challengeCount={challenges.length} />
 
           {/* User XP bar */}
           {isAuth && mySkill && (
