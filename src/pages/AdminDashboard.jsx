@@ -38,15 +38,16 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     base44.auth.isAuthenticated().then(async (auth) => {
-      if (auth) {
-        const u = await base44.auth.me();
-        setUser(u);
-        if (u.email === OWNER_EMAIL || u.role === 'admin') {
-          setIsAdmin(true);
-        } else {
-          const mods = await base44.entities.AdminModerator.filter({ user_email: u.email, is_active: true });
-          setIsAdmin(mods.length > 0);
-        }
+      if (!auth) { setLoading(false); return; }
+      const u = await base44.auth.me();
+      setUser(u);
+      // Primary check: platform role (set server-side, cannot be spoofed by client)
+      if (u.role === 'admin') {
+        setIsAdmin(true);
+      } else {
+        // Secondary check: moderator record in DB
+        const mods = await base44.entities.AdminModerator.filter({ user_email: u.email, is_active: true });
+        setIsAdmin(mods.length > 0);
       }
       setLoading(false);
     });
