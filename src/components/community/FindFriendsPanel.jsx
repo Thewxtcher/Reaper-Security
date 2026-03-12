@@ -61,19 +61,41 @@ export default function FindFriendsPanel({ user, onStartDM }) {
 
   const sendRequestMutation = useMutation({
     mutationFn: async (email) => {
-      // Check not already friends
+      const trimmedEmail = email.trim().toLowerCase();
+      if (trimmedEmail === user.email.toLowerCase()) throw new Error("You can't add yourself");
       const existing = friendships.find(f =>
-        (f.requester_email === user.email && f.receiver_email === email) ||
-        (f.receiver_email === user.email && f.requester_email === email)
+        (f.requester_email === user.email && f.receiver_email === trimmedEmail) ||
+        (f.receiver_email === user.email && f.requester_email === trimmedEmail)
       );
-      if (existing) throw new Error('Already connected');
-      return base44.entities.Friendship.create({
+      if (existing) throw new Error('Already connected or request pending');
+
+      // Look up receiver's real name
+      let receiverName = trimmedEmail.split('@')[0];
+      try {
+        const users = await base44.entities.User.filter({ email: trimmedEmail });
+        if (users.length > 0) receiverName = users[0].full_name || receiverName;
+      } catch {}
+
+      const friendship = await base44.entities.Friendship.create({
         requester_email: user.email,
         requester_name: user.full_name || user.email,
-        receiver_email: email.trim(),
-        receiver_name: email.trim().split('@')[0],
+        receiver_email: trimmedEmail,
+        receiver_name: receiverName,
         status: 'pending',
       });
+
+      // Notify the receiver
+      await base44.entities.Notification.create({
+        user_email: trimmedEmail,
+        type: 'friend_request',
+        title: 'New Friend Request',
+        body: `${user.full_name || user.email} sent you a friend request`,
+        from_email: user.email,
+        from_name: user.full_name || user.email,
+        is_read: false,
+      });
+
+      return friendship;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['friendships'] });
